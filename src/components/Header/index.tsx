@@ -57,20 +57,6 @@ function Header(){
         >
           <Span>
           <div className="dropdown" style={{float:"left"}}>
-            <AltButton>
-              <div style={{width:"128px"}}>dApps</div>
-            </AltButton>
-            <div className="dropdown-content">
-            <Link to="/Locker">Liquidity Locker</Link>
-            <Link to="/Farms">Farms</Link>
-              <a href="https://www.aurorapunks.art" target="_blank" rel="noreferrer">AuroraPunks</a>
-              { Home ? 
-        <></>
-        :
-        <><Link to="/">Back to Landing</Link></>
-        }
-            
-            </div>
           </div>
            {/* >
           </Link>*/}
@@ -103,21 +89,6 @@ function Header(){
               <Span>Inicio</Span>
             </a>
           </CustomNavLinkSmall>
-          <CustomNavLinkSmall >
-            <a style={{textDecoration:'none'}} href="#" target="_blank" rel="noreferrer">
-            <Span>algo</Span>
-            </a>
-          </CustomNavLinkSmall>
-          <CustomNavLinkSmall >
-            <a style={{textDecoration:'none'}} href="#" target="_blank" rel="noreferrer">
-            <Span>Twitter</Span>
-            </a>
-          </CustomNavLinkSmall>
-          <CustomNavLinkSmall >
-            <a href="#" target="_blank" rel="noreferrer">
-              <Span>Medium</Span>
-            </a>
-          </CustomNavLinkSmall>
           
           {/*<CustomNavLinkSmall >
             <a href="https://gateway.boba.network/">
@@ -126,13 +97,7 @@ function Header(){
           </CustomNavLinkSmall>*/}
           { Home ? 
         <><CustomNavLinkSmall onClick={() => scrollTo("about")}>
-        <Span style={{color:"#fff"}}>About</Span>
-        </CustomNavLinkSmall>
-        <CustomNavLinkSmall onClick={() => scrollTo("tokenomics")}>
-        <Span style={{color:"#fff"}}>Tokenomics</Span>
-        </CustomNavLinkSmall>
-        <CustomNavLinkSmall onClick={() => scrollTo("roadmap")}>
-          <Span style={{color:"#fff"}}>Roadmap</Span>
+        <Span style={{color:"#fff"}}>Ayuda</Span>
         </CustomNavLinkSmall></>
         :
         <></>

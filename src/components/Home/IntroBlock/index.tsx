@@ -180,14 +180,24 @@ function RightBlock() {
           <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
             <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
               <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
-                <body>aqui estaran los datos del STL</body>{/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
-                <p>Dimensiones x: 5mm, y: 3 mm, z: 2mm</p>
-                <p>tiempo de impreción: 03:43:32</p>
-                <p>etc.....</p>
+                {selectedOptionIm != "" && material != "" && infill != "" ? 
+                  <div>
+                    <body>aqui estaran los datos del STL</body>{/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
+                    <p>Dimensiones x: 5mm, y: 3 mm, z: 2mm</p>
+                    <p>tiempo de impreción: 03:43:32</p>
+                    <p>etc.....</p>
+                  </div>
+                : 
+                <></>
+                }
+                
           {/*debo encontrar la forma de colocar un viewer de STL */}
              </Col>
             </Col>
           </Col>
+        </Row>
+        <Row style={{justifyContent:"center"}}>
+          <button>Cotizar</button>
         </Row>
         
       </FadeIn>
