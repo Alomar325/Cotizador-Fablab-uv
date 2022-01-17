@@ -7,6 +7,7 @@ import { useState } from "react";
 import FadeIn from 'react-fade-in';
 import ComboBox from 'react-responsive-combo-box';
 import 'react-responsive-combo-box/dist/index.css';
+import DragAndDrop from "./DragAndDrop";
 
 import {
   RightBlockContainer,
@@ -77,7 +78,8 @@ function RightBlock() {
           
           </Row>
           <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
-          <Content style={{textAlign:"center"}} >Aqui estara la el objeto 3D con sus dimensiones.</Content>
+          <DragAndDrop></DragAndDrop>
+          
           <Row style={{justifyContent:"flex-start"}} >
           <Col lg={11} md={11} sm={11} xs={24} style={{justifyContent:"flex-start"}}>
               
@@ -182,7 +184,7 @@ function RightBlock() {
               <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
                 {selectedOptionIm != "" && material != "" && infill != "" ? 
                   <div>
-                    <body>aqui estaran los datos del STL</body>{/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
+{/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
                     <p>Dimensiones x: 5mm, y: 3 mm, z: 2mm</p>
                     <p>tiempo de impreción: 03:43:32</p>
                     <p>etc.....</p>
@@ -197,7 +199,7 @@ function RightBlock() {
           </Col>
         </Row>
         <Row style={{justifyContent:"center"}}>
-          <button>Cotizar</button>
+          <button>cotizar</button>
         </Row>
         
       </FadeIn>
