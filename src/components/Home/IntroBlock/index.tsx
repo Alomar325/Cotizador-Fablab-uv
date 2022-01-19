@@ -1,8 +1,6 @@
 import { Row, Col } from "antd";
-import { SvgIcon } from "../../../common/SvgIcon";
-import { Button } from "../../../common/Buttons/Button";
-import { AltButton } from "../../../common/Buttons/altButton";
-import { Link } from 'react-router-dom';
+import ReactDOM from "react-dom";
+import { useRanger } from "react-ranger";
 import { useState } from "react";
 import FadeIn from 'react-fade-in';
 import ComboBox from 'react-responsive-combo-box';
@@ -31,10 +29,22 @@ function RightBlock() {
   const [selectedOptionIm, setSelectedOptionIm] = useState("");
   const [material, setMaterial] = useState("");
   const [infill, setInfill] = useState("");
+  const [values, setValues] = useState([0]);
+
+  const { getTrackProps, ticks, handles } = useRanger({
+    values,
+    onChange: setValues,
+    min: 0,
+    max: 100,
+    stepSize: 1,
+    ticks: [""]
+  });
+
   const dataIM = [
     'Impresora 1',
     'Impresora 2'
   ]
+
 
   const materiales = [
     'PLA',
@@ -172,8 +182,50 @@ function RightBlock() {
                     selectedOptionColor='#68D391'
                   />  
                   {infill}
+                  <p>Calidad:</p>
+                  <div
+                    {...getTrackProps({
+                      style: {
+                        height: "4px",
+                        background: "#ddd",
+                        boxShadow: "inset 0 10px 2px rgba(0,0,0,.6)",
+                        borderRadius: "2px",
+                        margin: "0 100px"
+                      }
+                    })}
+                  >
+                    {ticks.map(({ value, getTickProps }) => (
+                      <div {...getTickProps()}>{value}</div>
+                    ))}
+                    {handles.map(({ getHandleProps }) => (
+                      <button
+                        {...getHandleProps({
+                          style: {
+                            width: "14px",
+                            height: "14px",
+                            outline: "none",
+                            borderRadius: "100%",
+                            background: "linear-gradient(to bottom, #eee 45%, #ddd 55%)",
+                            border: "solid 1px #888"
+                          }
+                        })}
+                      />
+                    ))}
+                  </div>
+                  <br />
+                  <br />
+                  <br />
+                  {values <= [33] ? <div>Baja </div> : ""}
+                  {values > [33] && values <= [66]  ? <div>Media </div> : ""}
+                  {values > [66]  ? <div>Alta </div> : ""}
+                  <pre
+                    style={{
+                      display: "inline-block",
+                      textAlign: "left"
+                    }}
+                  ></pre>
                 </Col>
-                
+
                 
                 
               </Row>
