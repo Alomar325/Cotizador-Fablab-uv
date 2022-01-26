@@ -1,7 +1,11 @@
 import { useState } from "react";
 import styled from "styled-components";
 
+import { StlViewer } from 'react-stl-file-viewer';
+
 function DragArea() {
+  const [photo, setphoto] = useState('')
+  const [volume, setvolume] = useState(0)
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
   const changeImage = (e) => {
     console.log(e.target.files);
@@ -12,6 +16,11 @@ function DragArea() {
         e.preventDefault();
         setImageSelectedPrevious(e.target.result); // le damos el binario de la imagen para mostrarla en pantalla
       };
+    }
+
+    function getFrame() {
+      let canvas = document.getElementsByTagName('canvas')[0]
+      return canvas.toDataURL()
     }
   };
   return (
@@ -34,14 +43,22 @@ function DragArea() {
         </div>
         {ImageSelectedPrevious != null ? 
             <div className="center">
-            <img
-              src={ImageSelectedPrevious}
-              alt=""
-              height="350px"
-              width="350px"
+            <StlViewer
+            width={1200}
+            height={500}
+            url={ImageSelectedPrevious}
+            groundColor='rgb(255, 255, 255)'
+            objectColor='rgb(50, 255, 255)'
+            skyboxColor='rgb(255, 255, 255)'
+            gridLineColor='rgb(0, 0, 0)'
+            lightColor='rgb(255, 255, 255)'
+            volume={setvolume}
             />
+            
           </div>
+          
         : <></>}
+        {`Volume: ${volume}`}
         
       </StyleDragArea>
     </div>

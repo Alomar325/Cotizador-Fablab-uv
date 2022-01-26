@@ -1,5 +1,4 @@
 import { Row, Col } from "antd";
-import ReactDOM from "react-dom";
 import { useRanger } from "react-ranger";
 import { useState } from "react";
 import FadeIn from 'react-fade-in';
@@ -7,6 +6,8 @@ import ComboBox from 'react-responsive-combo-box';
 import 'react-responsive-combo-box/dist/index.css';
 import DragAndDrop from "./DragAndDrop";
 
+
+ // npm i --save react-ranger, npm i --save three
 import {
   RightBlockContainer,
   Content,
@@ -26,10 +27,15 @@ import {
   />*/
 
 function RightBlock() {
+
+
+
   const [selectedOptionIm, setSelectedOptionIm] = useState("");
   const [material, setMaterial] = useState("");
   const [infill, setInfill] = useState("");
   const [values, setValues] = useState([0]);
+
+  
 
   const { getTrackProps, ticks, handles } = useRanger({
     values,
@@ -89,7 +95,9 @@ function RightBlock() {
           </Row>
           <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
           <DragAndDrop></DragAndDrop>
+
           
+
           <Row style={{justifyContent:"flex-start"}} >
           <Col lg={11} md={11} sm={11} xs={24} style={{justifyContent:"flex-start"}}>
               
