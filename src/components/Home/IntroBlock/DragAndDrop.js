@@ -1,12 +1,19 @@
 import { useState } from "react";
 import styled from "styled-components";
-
-import { StlViewer } from 'react-stl-file-viewer';
+import {StlViewer} from "react-stl-viewer";
+import ModelViewer from "../ModelViewer";
 
 function DragArea() {
   const [photo, setphoto] = useState('')
   const [volume, setvolume] = useState(0)
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
+
+  const style = {
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+}
   const changeImage = (e) => {
     console.log(e.target.files);
     if (e.target.files[0] !== undefined) {
@@ -24,14 +31,14 @@ function DragArea() {
     }
   };
   return (
-    <div>
+    <div >
       <StyleDragArea>
         <br />
         <div className="image-upload-wrap">
           <input
             className="file-upload-input"
             type="file"
-            accept="image/*"
+            accept=".stl"
             multiple
             onChange={(e) => {
               changeImage(e);
@@ -43,23 +50,14 @@ function DragArea() {
         </div>
         {ImageSelectedPrevious != null ? 
             <div className="center">
-            <StlViewer
-            width={1200}
-            height={500}
-            url={ImageSelectedPrevious}
-            groundColor='rgb(255, 255, 255)'
-            objectColor='rgb(50, 255, 255)'
-            skyboxColor='rgb(255, 255, 255)'
-            gridLineColor='rgb(0, 0, 0)'
-            lightColor='rgb(255, 255, 255)'
-            volume={setvolume}
+            <ModelViewer
+            model={ImageSelectedPrevious}
             />
-            
+          
           </div>
           
         : <></>}
         {`Volume: ${volume}`}
-        
       </StyleDragArea>
     </div>
   );
