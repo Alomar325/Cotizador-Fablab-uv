@@ -15,6 +15,7 @@ function DragArea() {
     height: '100vh',
 }
   const changeImage = (e) => {
+    setImageSelectedPrevious(null);
     console.log(e.target.files);
     if (e.target.files[0] !== undefined) {
       const reader = new FileReader();

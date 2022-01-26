@@ -10,76 +10,73 @@ const ModelViewer = ({model}) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
-    /*
+    //Creacion de escena
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-    var renderer = new THREE.WebGLRenderer();
+    //Creación de camara
+    var camera = new THREE.PerspectiveCamera( 40, 1280 / 720, 0.1, 2000 );
+    
 
-    renderer.setSize( 1024, 576 );
+    //Renderizador
+    var renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setClearColor(0xffffff, 0);;
+    renderer.setSize(1280, 720 );
+
+    //Montar a componente funcional React
     mountRef.current.appendChild( renderer.domElement );
+    // Iluminacion
+    var light = new THREE.DirectionalLight(0xffffff);
+    light.position.set(0,0,10);
+    scene.add(light);
 
-    var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    var cube = new THREE.Mesh( geometry, material );
-
-    scene.add( cube );
-    camera.position.z = 5;
-
-    var animate = function () {
-      requestAnimationFrame( animate );
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-      renderer.render( scene, camera );
-    }
-
-    let onWindowResize = function () {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize( window.innerWidth, window.innerHeight );
-    }
-
-    window.addEventListener("resize", onWindowResize, false);
-
-    animate();
     
-    return () => mountRef.current.removeChild( renderer.domElement);
-    */
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
-    camera.position.setScalar(20);
-    var renderer = new THREE.WebGLRenderer();
-    renderer.setClearColor(0x00000000);
-    renderer.setSize(1024, 576 );
-    mountRef.current.appendChild( renderer.domElement );
     
-    var controls = new OrbitControls(camera, renderer.domElement);
+    //Controles orbitales
+    const controls = new OrbitControls( camera, renderer.domElement );
+    controls.target.set( 0, 0.5, 0 );
+    controls.update();
+    controls.enablePan = false;
+    controls.enableDamping = true;
     
+
+    //Carga de modelo 3D
     var loader = new STLLoader();
     loader.load(model, function(geometry) {
-    
-      var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: true
+      //Opciones de modelo 3D
+      var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
+        color: 0x51a2db,
+        //wireframe: true
       }));
       mesh.rotation.set(-Math.PI / 2, 0, 0);
-      mesh.scale.setScalar(100);
+      mesh.position.set( 1, 1, 0 );
+      mesh.scale.setScalar(1);
       scene.add(mesh);
-    
+      //Caja de bordes (para obtener medidas)
+      var bbox = new THREE.Box3();
+      bbox.setFromObject( mesh );
+      
+      camera.position.set(10,10,-10);
+      //Determinación de medidas
+      var YLength = bbox.max.y - bbox.min.y;
+      var XLength = bbox.max.x - bbox.min.x;
+      var ZLength = bbox.max.z - bbox.min.z;
+      console.log('Diametro X '+(XLength))
+      console.log('Diametro Y '+(YLength))
+      console.log('Diametro Z '+(ZLength))
       console.log("stl volume is " + getVolume(geometry));
     });
     
     // check with known volume:
-    var hollowCylinderGeom = new THREE.LatheBufferGeometry([
+    /*var hollowCylinderGeom = new THREE.LatheBufferGeometry([
       new THREE.Vector2(1, 0),
       new THREE.Vector2(2, 0),
       new THREE.Vector2(2, 2),
       new THREE.Vector2(1, 2),
       new THREE.Vector2(1, 0)
     ], 90).toNonIndexed();
-    console.log("pre-computed volume of a hollow cylinder (PI * (R^2 - r^2) * h): " + Math.PI * (Math.pow(2, 2) - Math.pow(1, 2)) * 2);
-    console.log("computed volume of a hollow cylinder: " + getVolume(hollowCylinderGeom));
+    //console.log("pre-computed volume of a hollow cylinder (PI * (R^2 - r^2) * h): " + Math.PI * (Math.pow(2, 2) - Math.pow(1, 2)) * 2);
+    //console.log("computed volume of a hollow cylinder: " + getVolume(hollowCylinderGeom));*/
     
-    
+    //Obtener volumen de un Modelo 3D
     function getVolume(geometry) {
     
       let position = geometry.attributes.position;
@@ -98,15 +95,23 @@ const ModelViewer = ({model}) => {
       return sum;
     
     }
-    
+
     function signedVolumeOfTriangle(p1, p2, p3) {
       return p1.dot(p2.cross(p3)) / 6.0;
     }
-    
+    //Función para lidiar con el cambio de display, verificar mas adelante
+    /*let onWindowResize = function () {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+    }
+
+    window.addEventListener("resize", onWindowResize, false);*/
+
     renderer.setAnimationLoop(() => {
       renderer.render(scene, camera);
     });
-    return () => mountRef.current.removeChild( renderer.domElement);
+
   }, []);
 
   return (
