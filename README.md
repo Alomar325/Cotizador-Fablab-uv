@@ -1,13 +1,13 @@
-# Polaris Token
+# Cotizador de impresión 3D FABLAB-UV
 
-Project site for PolarisToken
+Sitio de cotizador de impresiones 3D para FABLAB-UV
 
-## Run locally
+## Ejecutar localmente
 
 ```bash
-# Install dependencies
+# Instalar dependencias
 npm install
 
-# Run
+# Ejecutar
 npm start
 ```

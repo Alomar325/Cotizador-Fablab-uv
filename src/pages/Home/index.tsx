@@ -6,12 +6,8 @@ import {
 
 const Container = lazy(() => import("../../common/Container"));
 const ScrollToTop = lazy(() => import("../../common/ScrollToTop"));
-const TokenomicsBlock = lazy(() => import("../../components/Home/TokenomicsBlock"));
-const AboutBlock = lazy(() => import ("../../components/Home/AboutBlock"));
-const TeamBlock = lazy(() => import ("../../components/Home/TeamBlock"));
-const PunkBlock = lazy(() => import ("../../components/Home/PunkBlock"));
 const IntroBlock = lazy(() => import ("../../components/Home/IntroBlock"));
-const RoadmapBlock = lazy(() => import ("../../components/Home/RoadmapBlock"));
+
 //const ChartBlock = lazy(() => import ("../../components/Home/ChartBlock"));
 
 

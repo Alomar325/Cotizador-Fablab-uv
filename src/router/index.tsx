@@ -5,8 +5,7 @@ import Header from "../components/Header";
 //import routes from "./config";
 import { Styles } from "../styles/styles";
 import Home from "../pages/Home";
-import Locker from "../pages/Locker";
-import Farm from "../pages/Farm";
+;
 //import Particles from "react-tsparticles";
 //import particlesOptions from "../particles.json";
 //import { ISourceOptions } from "tsparticles";
@@ -22,18 +21,6 @@ const Router = () => {
       <Switch>
         <Route exact path="/">
           <Home/>
-        </Route>
-        <Route path="/Locker/:token/:owner">
-          <Locker/>
-        </Route>
-        <Route path="/Locker/:token">
-          <Locker/>
-        </Route>
-        <Route exact path="/Locker">
-          <Locker/>
-        </Route>
-        <Route exact path="/Farms">
-          <Farm/>
         </Route>
       </Switch>
       <Footer />
