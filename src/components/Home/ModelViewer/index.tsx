@@ -18,15 +18,23 @@ const ModelViewer = ({model}) => {
 
     //Renderizador
     var renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setClearColor(0xffffff, 0);;
+    renderer.setClearColor(0xffffff, 0);
     renderer.setSize(1280, 720 );
 
     //Montar a componente funcional React
     mountRef.current.appendChild( renderer.domElement );
     // Iluminacion
-    var light = new THREE.DirectionalLight(0xffffff);
-    light.position.set(0,0,10);
-    scene.add(light);
+    var lightz = new THREE.DirectionalLight(0xffffff);
+    lightz.position.set(0,0,10);
+    scene.add(lightz);
+
+    var lightz2 = new THREE.DirectionalLight(0xffffff);
+    lightz2.position.set(0,0,-10);
+    scene.add(lightz2);
+
+    var lighty = new THREE.DirectionalLight(0xffffff);
+    lighty.position.set(0,-10,0);
+    scene.add(lighty);
 
     
     
@@ -46,15 +54,16 @@ const ModelViewer = ({model}) => {
         color: 0x51a2db,
         //wireframe: true
       }));
+      camera.position.set(0,0,10);
       mesh.rotation.set(-Math.PI / 2, 0, 0);
-      mesh.position.set( 1, 1, 0 );
-      mesh.scale.setScalar(1);
+      mesh.position.set( 0, 0, 0 );
+      mesh.scale.set(0.05, 0.05, 0.05);
       scene.add(mesh);
       //Caja de bordes (para obtener medidas)
       var bbox = new THREE.Box3();
       bbox.setFromObject( mesh );
       
-      camera.position.set(10,10,-10);
+      
       //Determinación de medidas
       var YLength = bbox.max.y - bbox.min.y;
       var XLength = bbox.max.x - bbox.min.x;

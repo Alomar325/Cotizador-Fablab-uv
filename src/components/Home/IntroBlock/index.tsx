@@ -4,7 +4,8 @@ import { useState } from "react";
 import FadeIn from 'react-fade-in';
 import ComboBox from 'react-responsive-combo-box';
 import 'react-responsive-combo-box/dist/index.css';
-import DragAndDrop from "./DragAndDrop";
+import styled from "styled-components";
+import ModelViewer from "../ModelViewer";
 
 
  // npm i --save react-ranger, npm i --save three
@@ -35,7 +36,23 @@ function RightBlock() {
   const [infill, setInfill] = useState("");
   const [values, setValues] = useState([0]);
 
+  const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
+
   
+
+
+  const changeImage = (e) => {
+    setImageSelectedPrevious(null);
+    console.log(e.target.files);
+    if (e.target.files[0] !== undefined) {
+      const reader = new FileReader();
+      reader.readAsDataURL(e.target.files[0]);
+      reader.onload = (e) => {
+        e.preventDefault();
+        setImageSelectedPrevious(e.target.result); // le damos el binario de la imagen para mostrarla en pantalla
+      };
+    }
+  };
 
   const { getTrackProps, ticks, handles } = useRanger({
     values,
@@ -94,8 +111,36 @@ function RightBlock() {
           
           </Row>
           <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
-          <DragAndDrop></DragAndDrop>
-
+          {/*aqui empiesa el Drag and Drop */}
+          <div >
+            <StyleDragArea>
+              <br />
+              <div className="image-upload-wrap">
+                <input
+                  className="file-upload-input"
+                  type="file"
+                  accept=".stl"
+                  multiple
+                  onChange={(e) => {
+                    changeImage(e);
+                  }}
+                />
+                <div className="text-information">
+                  <p>Seleccione su archivo</p>
+                </div>
+              </div>
+              {ImageSelectedPrevious != null ? 
+                  <div className="center">
+                  <ModelViewer
+                  model={ImageSelectedPrevious}
+                  />
+                
+                </div>
+                
+              : <></>}
+            </StyleDragArea>
+          </div>
+{/* y aqui termina el drag and drop */}
           
 
           <Row style={{justifyContent:"flex-start"}} >
@@ -268,3 +313,40 @@ function RightBlock() {
 };
 
 export default RightBlock;
+
+const StyleDragArea = styled.div`
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .file-upload-content {
+    display: none;
+    text-align: center;
+  }
+  .file-upload-input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .image-upload-wrap {
+    position: relative;
+    height: 100px;
+    border: 4px solid #d0d7de;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  .image-upload-wrap:hover {
+    background-color: transparent;
+    border: 4px dashed #d0d7de;
+  }
+  .text-information {
+    margin-top: 30px;
+    text-align: center;
+  }
+`;
