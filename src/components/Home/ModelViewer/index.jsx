@@ -23,27 +23,6 @@ const ModelViewer = ({model}) => {
 
     //Montar a componente funcional React
     mountRef.current.appendChild( renderer.domElement );
-    // Iluminacion
-    var lightz = new THREE.DirectionalLight(0xffffff);
-    lightz.position.set(0,0,10);
-    scene.add(lightz);
-
-    var lightz2 = new THREE.DirectionalLight(0xffffff);
-    lightz2.position.set(0,0,-10);
-    scene.add(lightz2);
-
-    var lighty = new THREE.DirectionalLight(0xffffff);
-    lighty.position.set(0,-10,0);
-    scene.add(lighty);
-
-    
-    
-    //Controles orbitales
-    const controls = new OrbitControls( camera, renderer.domElement );
-    controls.target.set( 0, 0.5, 0 );
-    controls.update();
-    controls.enablePan = false;
-    controls.enableDamping = true;
     
 
     //Carga de modelo 3D
@@ -54,25 +33,49 @@ const ModelViewer = ({model}) => {
         color: 0x51a2db,
         //wireframe: true
       }));
-      camera.position.set(0,0,10);
+      
       mesh.rotation.set(-Math.PI / 2, 0, 0);
       mesh.position.set( 0, 0, 0 );
-      mesh.scale.set(0.05, 0.05, 0.05);
+      mesh.scale.set(0.1, 0.1, 0.1);
       scene.add(mesh);
       //Caja de bordes (para obtener medidas)
       var bbox = new THREE.Box3();
+      
       bbox.setFromObject( mesh );
-      
-      
+      var cent = new THREE.Vector3();
+      bbox.getCenter(cent);
+      console.log("centro x: "+cent.x);
+      console.log("centro y: "+cent.y);
+      console.log("centro z: "+cent.z);
       //Determinación de medidas
       var YLength = bbox.max.y - bbox.min.y;
       var XLength = bbox.max.x - bbox.min.x;
       var ZLength = bbox.max.z - bbox.min.z;
+      camera.position.set(cent.x,cent.y,cent.z+ZLength*3);
       console.log('Diametro X '+(XLength))
       console.log('Diametro Y '+(YLength))
       console.log('Diametro Z '+(ZLength))
       console.log("stl volume is " + getVolume(geometry));
-    });
+      //Controles orbitales
+      const controls = new OrbitControls( camera, renderer.domElement );
+      controls.target.set( cent.x, cent.y, cent.z );
+      controls.update();
+      controls.enablePan = false;
+      controls.enableDamping = true;
+
+      // Iluminacion
+      var lightz = new THREE.DirectionalLight(0xffffff);
+      lightz.position.set(0,0,ZLength*3);
+      scene.add(lightz);
+
+      var lightz2 = new THREE.DirectionalLight(0xffffff);
+      lightz2.position.set(0,0,-ZLength*3);
+      scene.add(lightz2);
+
+      var lighty = new THREE.DirectionalLight(0xffffff);
+      lighty.position.set(0,YLength*3,0);
+      scene.add(lighty);
+      });
     
     // check with known volume:
     /*var hollowCylinderGeom = new THREE.LatheBufferGeometry([
