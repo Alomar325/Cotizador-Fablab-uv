@@ -5,7 +5,11 @@ import FadeIn from 'react-fade-in';
 import ComboBox from 'react-responsive-combo-box';
 import 'react-responsive-combo-box/dist/index.css';
 import styled from "styled-components";
-import ModelViewer from "../ModelViewer";
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { OrbitControls } from './OrbitControls.js'
+import { STLLoader } from './STLLoader'
+
 
 
  // npm i --save react-ranger, npm i --save three
@@ -15,6 +19,7 @@ import {
   //ContentWrapper,
   Cimg,
 } from "./styles";
+import { getMaxListeners } from "process";
 /*
 
 */
@@ -34,12 +39,168 @@ function RightBlock() {
   const [selectedOptionIm, setSelectedOptionIm] = useState("");
   const [material, setMaterial] = useState("");
   const [infill, setInfill] = useState("");
+  const [Cal, setCal] = useState("");
+  const [XL, setXL] = useState("");
+  const [YL, setYL] = useState("");
+  const [ZL, setZL] = useState("");
+  const [tiempo, setTiempo] =useState("");
+  const [volumen, setVolumne] = useState("");
+  const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
 
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
 
   
+  const ModelViewer = ({model}) => {
 
+    const mountRef = useRef(null);
+  
+    useEffect(() => {
+      //Creacion de escena
+      var scene = new THREE.Scene();
+      //Creación de camara
+      var camera = new THREE.PerspectiveCamera( 40, 1280 / 720, 0.1, 2000 );
+      
+  
+      //Renderizador
+      var renderer = new THREE.WebGLRenderer({ alpha: true });
+      renderer.setClearColor(0xffffff, 0);
+      renderer.setSize(1280, 720 );
+  
+      //Montar a componente funcional React
+      mountRef.current.appendChild( renderer.domElement );
+      
+  
+      //Carga de modelo 3D
+      var loader = new STLLoader();
+      loader.load(model, function(geometry) {
+        //Opciones de modelo 3D
+        var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
+          color: 0x51a2db,
+          //wireframe: true
+        }));
+        
+        mesh.rotation.set(-Math.PI / 2, 0, 0);
+        mesh.position.set( 0, 0, 0 );
+        mesh.scale.set(0.1, 0.1, 0.1);
+        scene.add(mesh);
+        //Caja de bordes (para obtener medidas)
+        var bbox = new THREE.Box3();
+        
+        bbox.setFromObject( mesh );
+        var cent = new THREE.Vector3();
+        bbox.getCenter(cent);
+        console.log("centro x: "+cent.x);
+        console.log("centro y: "+cent.y);
+        console.log("centro z: "+cent.z);
+        //Determinación de medidas
+        var YLength = bbox.max.y - bbox.min.y;
+        var XLength = bbox.max.x - bbox.min.x;
+        var ZLength = bbox.max.z - bbox.min.z;
+        var AltaT = 29;
+        var MediaT = 16;
+        var BajaT = 12;
+        setXL(XLength.toFixed(2));
+        setYL(YLength.toFixed(2));
+        setZL(ZLength.toFixed(2));
+        camera.position.set(cent.x,cent.y,cent.z+ZLength*3);
+        console.log("stl volume is " + getVolume(geometry));
+        var volumenRestante = ((getVolume(geometry)/1000).toFixed(2)*infill)/100;
+        if(Cal == "Alta"){
+          setTiempo((volumenRestante*29).toFixed(0))
+        }
+        if(Cal == "Media"){
+          setTiempo((volumenRestante*16).toFixed(0))
+        }
+        if(Cal == "Baja"){
+          setTiempo((volumenRestante*12).toFixed(0))
+        }
+        setVolumne(volumenRestante);
+        
+        //Controles orbitales
+        const controls = new OrbitControls( camera, renderer.domElement );
+        controls.target.set( cent.x, cent.y, cent.z );
+        controls.update();
+        controls.enablePan = false;
+        controls.enableDamping = true;
+  
+        // Iluminacion
+        var lightz = new THREE.DirectionalLight(0xffffff);
+        lightz.position.set(0,0,ZLength*3);
+        scene.add(lightz);
+  
+        var lightz2 = new THREE.DirectionalLight(0xffffff);
+        lightz2.position.set(0,0,-ZLength*3);
+        scene.add(lightz2);
+  
+        var lighty = new THREE.DirectionalLight(0xffffff);
+        lighty.position.set(0,YLength*3,0);
+        scene.add(lighty);
+
+        var lightx = new THREE.DirectionalLight(0xffffff);
+        lightx.position.set(XLength*3,0,0);
+        scene.add(lightx);
+
+        var lightx2 = new THREE.DirectionalLight(0xffffff);
+        lightx2.position.set(-XLength*3,0,0);
+        scene.add(lightx2);
+        });
+      
+      // check with known volume:
+      /*var hollowCylinderGeom = new THREE.LatheBufferGeometry([
+        new THREE.Vector2(1, 0),
+        new THREE.Vector2(2, 0),
+        new THREE.Vector2(2, 2),
+        new THREE.Vector2(1, 2),
+        new THREE.Vector2(1, 0)
+      ], 90).toNonIndexed();
+      //console.log("pre-computed volume of a hollow cylinder (PI * (R^2 - r^2) * h): " + Math.PI * (Math.pow(2, 2) - Math.pow(1, 2)) * 2);
+      //console.log("computed volume of a hollow cylinder: " + getVolume(hollowCylinderGeom));*/
+      
+      //Obtener volumen de un Modelo 3D
+      function getVolume(geometry) {
+      
+        let position = geometry.attributes.position;
+        let faces = position.count / 3;
+        let sum = 0;
+        let p1 = new THREE.Vector3(),
+          p2 = new THREE.Vector3(),
+          p3 = new THREE.Vector3();
+        for (let i = 0; i < faces; i++) {
+          p1.fromBufferAttribute(position, i * 3 + 0);
+          p2.fromBufferAttribute(position, i * 3 + 1);
+          p3.fromBufferAttribute(position, i * 3 + 2);
+          sum += signedVolumeOfTriangle(p1, p2, p3);
+          //console.log(p1,p2,p3);
+        }
+        return sum;
+      
+      }
+  
+      function signedVolumeOfTriangle(p1, p2, p3) {
+        return p1.dot(p2.cross(p3)) / 6.0;
+      }
+      //Función para lidiar con el cambio de display, verificar mas adelante
+      /*let onWindowResize = function () {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+      }
+  
+      window.addEventListener("resize", onWindowResize, false);*/
+      
+      renderer.setAnimationLoop(() => {
+        renderer.render(scene, camera);
+      });
+  
+    }, []);
+  
+    return (
+      <div ref={mountRef}>
+  
+      </div>
+    );
+  }
 
   const changeImage = (e) => {
     setImageSelectedPrevious(null);
@@ -70,20 +231,38 @@ function RightBlock() {
 
 
   const materiales = [
-    'PLA',
-    'ABS'
+    'PLA'
   ]
   const relleno = [
-    '10%',
-    '20%',
-    '30%',
-    '40%',
-    '50%',
-    '60%',
-    '70%',
-    '80%',
-    '90%',
-    '100%'
+    '10',
+    '20',
+    '30',
+    '40',
+    '50',
+    '60',
+    '70',
+    '80',
+    '90',
+    '100'
+  ]
+  
+  const calidad = [
+    'Alta', //altura de la capa 0,1
+    'Media', //altura de la capa 0,2
+    'Baja'  //altura de la capa 0,3
+  ]
+  
+  const cantidad = [
+    '1', 
+    '2', 
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10'  
   ]
   
   function handleSelect(option){ 
@@ -236,41 +415,45 @@ function RightBlock() {
                   />  
                   {infill}
                   <p>Calidad:</p>
-                  <div
-                    {...getTrackProps({
-                      style: {
-                        height: "4px",
-                        background: "#ddd",
-                        boxShadow: "inset 0 10px 2px rgba(0,0,0,.6)",
-                        borderRadius: "2px",
-                        margin: "0 100px"
-                      }
-                    })}
-                  >
-                    {ticks.map(({ value, getTickProps }) => (
-                      <div {...getTickProps()}>{value}</div>
-                    ))}
-                    {handles.map(({ getHandleProps }) => (
-                      <button
-                        {...getHandleProps({
-                          style: {
-                            width: "14px",
-                            height: "14px",
-                            outline: "none",
-                            borderRadius: "100%",
-                            background: "linear-gradient(to bottom, #eee 45%, #ddd 55%)",
-                            border: "solid 1px #888"
-                          }
-                        })}
-                      />
-                    ))}
-                  </div>
+                  <ComboBox
+        
+                    options={calidad}
+                    placeholder="Elige la calidad del modelo."
+                    optionsListMaxHeight={300}
+                    style={{
+                      width: "300px"
+                    }}
+                    renderOptions={(option) => (
+                      <div className="comboBoxOption">{option}</div>
+                    )}
+                    onSelect={(option) => setCal(option)}
+                    onChange={(event) => console.log(event.target.value)}
+                    enableAutocomplete
+                    selectedOptionColor='#68D391'
+                  />
+                  {Cal}
+
+                  <p>Cantidad:</p>
+                  <ComboBox
+        
+                    options={cantidad}
+                    placeholder="Elige cuantos modelos quiere imprimir."
+                    optionsListMaxHeight={300}
+                    style={{
+                      width: "300px"
+                    }}
+                    renderOptions={(option) => (
+                      <div className="comboBoxOption">{option}</div>
+                    )}
+                    onSelect={(option) => setCantidad(option)}
+                    onChange={(event) => console.log(event.target.value)}
+                    enableAutocomplete
+                    selectedOptionColor='#68D391'
+                  />
+                  {cant}
                   <br />
                   <br />
                   <br />
-                  {values <= [33] ? <div>Baja </div> : ""}
-                  {values > [33] && values <= [66]  ? <div>Media </div> : ""}
-                  {values > [66]  ? <div>Alta </div> : ""}
                   <pre
                     style={{
                       display: "inline-block",
@@ -287,15 +470,15 @@ function RightBlock() {
           <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
             <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
               <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
-                {selectedOptionIm != "" && material != "" && infill != "" ? 
+                {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
                   <div>
 {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
-                    <p>Dimensiones x: 5mm, y: 3 mm, z: 2mm</p>
-                    <p>tiempo de impreción: 03:43:32</p>
-                    <p>etc.....</p>
+                    <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
+                    <p>Tiempo de impresión de una piesa: {tiempo} minutos</p>
+                    <p>Volumen del modelo: {volumen} cm<sup>3</sup></p>
                   </div>
                 : 
-                <></>
+                <><p>Le falta un campo por completar</p></>
                 }
                 
           {/*debo encontrar la forma de colocar un viewer de STL */}
