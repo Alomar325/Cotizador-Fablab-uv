@@ -43,7 +43,8 @@ function RightBlock() {
   const [XL, setXL] = useState("");
   const [YL, setYL] = useState("");
   const [ZL, setZL] = useState("");
-  const [tiempo, setTiempo] =useState("");
+  const [tiempoH, setTiempoH] =useState("");
+  const [tiempoM, setTiempoM] =useState("");
   const [volumen, setVolumne] = useState("");
   const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
@@ -106,15 +107,21 @@ function RightBlock() {
         camera.position.set(cent.x,cent.y,cent.z+ZLength*3);
         console.log("stl volume is " + getVolume(geometry));
         var volumenRestante = ((getVolume(geometry)/1000).toFixed(2)*infill)/100;
+        var hora = 0;
         if(Cal == "Alta"){
-          setTiempo((volumenRestante*29).toFixed(0))
+          hora = ((volumenRestante*23).toFixed(0))/60;
         }
         if(Cal == "Media"){
-          setTiempo((volumenRestante*16).toFixed(0))
+          hora = ((volumenRestante*12).toFixed(0))/60;
         }
         if(Cal == "Baja"){
-          setTiempo((volumenRestante*12).toFixed(0))
+          hora = ((volumenRestante*9).toFixed(0))/60;
         }
+        var minutos = hora - Math.trunc(hora);
+        hora = hora - minutos;
+        minutos = minutos * 60;
+        setTiempoH(hora);
+        setTiempoM(Math.trunc(minutos));
         setVolumne(volumenRestante);
         
         //Controles orbitales
@@ -474,7 +481,7 @@ function RightBlock() {
                   <div>
 {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
                     <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
-                    <p>Tiempo de impresión de una piesa: {tiempo} minutos</p>
+                    <p>Tiempo de impresión de una piesa: {tiempoH} Horas  {tiempoM} minutos</p>
                     <p>Volumen del modelo: {volumen} cm<sup>3</sup></p>
                   </div>
                 : 
