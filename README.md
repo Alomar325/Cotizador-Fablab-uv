@@ -7,7 +7,8 @@ Sitio de cotizador de impresiones 3D para FABLAB-UV
 ```bash
 # Instalar dependencias
 npm install
-
+npm install --save three
 # Ejecutar
 npm start
 ```
+

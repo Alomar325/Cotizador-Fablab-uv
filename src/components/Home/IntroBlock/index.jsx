@@ -46,6 +46,7 @@ function RightBlock() {
   const [tiempoH, setTiempoH] =useState("");
   const [tiempoM, setTiempoM] =useState("");
   const [volumen, setVolumne] = useState("");
+  const [precio, setPrecio] = useState("");
   const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
 
@@ -66,7 +67,7 @@ function RightBlock() {
       //Renderizador
       var renderer = new THREE.WebGLRenderer({ alpha: true });
       renderer.setClearColor(0xffffff, 0);
-      renderer.setSize(1280, 720 );
+      renderer.setSize(720, 460 );
   
       //Montar a componente funcional React
       mountRef.current.appendChild( renderer.domElement );
@@ -106,10 +107,10 @@ function RightBlock() {
         setZL(ZLength.toFixed(2));
         camera.position.set(cent.x,cent.y,cent.z+ZLength*3);
         console.log("stl volume is " + getVolume(geometry));
-        var volumenRestante = ((getVolume(geometry)/1000).toFixed(2)*infill)/100;
+        var volumenRestante = (((getVolume(geometry)/1000).toFixed(2)*infill)/100);
         var hora = 0;
         if(Cal == "Alta"){
-          hora = ((volumenRestante*23).toFixed(0))/60;
+          hora = (((volumenRestante)*23).toFixed(0))/60;
         }
         if(Cal == "Media"){
           hora = ((volumenRestante*12).toFixed(0))/60;
@@ -123,6 +124,7 @@ function RightBlock() {
         setTiempoH(hora);
         setTiempoM(Math.trunc(minutos));
         setVolumne(volumenRestante);
+        setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)))
         
         //Controles orbitales
         const controls = new OrbitControls( camera, renderer.domElement );
@@ -241,6 +243,7 @@ function RightBlock() {
     'PLA'
   ]
   const relleno = [
+    '0',
     '10',
     '20',
     '30',
@@ -316,183 +319,179 @@ function RightBlock() {
                 </div>
               </div>
               {ImageSelectedPrevious != null ? 
-                  <div className="center">
-                  <ModelViewer
-                  model={ImageSelectedPrevious}
-                  />
+                  <Row style={{justifyContent:"flex-start"}} >
+                  <Col>
+                    <ModelViewer
+                    model={ImageSelectedPrevious}
+                    />
+                  </Col>
+                  <Col>
+                    <Row style={{justifyContent:"flex-end"}}>
+                      <Col  style={{justifyContent:"flex-end",paddingRight:"10px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
+                      <p style={{textAlign:"left"}} >Impresora:</p>
+                      <ComboBox
+              
+                        options={dataIM}
+                        placeholder="Elige tu impresora"
+                        optionsListMaxHeight={300}
+                        style={{
+                          width: "300px"
+                        }}
+                        renderOptions={(option) => (
+                          <div className="comboBoxOption">{option}</div>
+                        )}
+                        onSelect={(option) => setSelectedOptionIm(option)}
+                        onChange={(event) => console.log(event.target.value)}
+                        enableAutocomplete
+                        selectedOptionColor='#68D391'
+                      />
+                        {selectedOptionIm}
+                        <span>
+                          {" "}
+                          {/*Lo de  abajo son if  si requieren que muestre cosas dependiendo de la impresora solo se debe colocar en la parte de codigo a la izquierda de ":" el lado derecho es el lado falso*/}
+                          {selectedOptionIm == "Impresora 1" ? <div>
+                          <p style={{textAlign:"left"}} >Material:</p>
+                          <ComboBox
+                            options={materiales}
+                            placeholder="Elige el material."
+                            optionsListMaxHeight={300}
+                            style={{
+                              width: "300px"
+                            }}
+                            renderOptions={(option) => (
+                              <div className="comboBoxOption">{option}</div>
+                            )}
+                            onSelect={(option) => handleSelect(option)}
+                            onChange={(event) => console.log(event.target.value)}
+                            enableAutocomplete
+                            selectedOptionColor='#68D391'
+                          />
+                            {material}
+                          </div>
+                          
+                          : <></>}
+
+                          {selectedOptionIm == "Impresora 2" ? <div>opciones de {selectedOptionIm}
+                          <ComboBox
                 
-                </div>
-                
+                            options={materiales}
+                            placeholder="Elige el material."
+                            optionsListMaxHeight={300}
+                            style={{
+                              width: "300px"
+                            }}
+                            renderOptions={(option) => (
+                              <div className="comboBoxOption">{option}</div>
+                            )}
+                            onSelect={(option) => handleSelect(option)}
+                            onChange={(event) => console.log(event.target.value)}
+                            enableAutocomplete
+                            selectedOptionColor='#68D391'
+                          />
+                            {material}
+
+                          </div>
+                          
+                          
+                          : <></>}
+
+                        </span>
+                        <p style={{textAlign:"left"}} >Relleno:</p>
+                        <ComboBox
+              
+                          options={relleno}
+                          placeholder="Elige el relleno."
+                          optionsListMaxHeight={300}
+                          style={{
+                            width: "300px"
+                          }}
+                          renderOptions={(option) => (
+                            <div className="comboBoxOption">{option}</div>
+                          )}
+                          onSelect={(option) => setInfill(option)}
+                          onChange={(event) => console.log(event.target.value)}
+                          enableAutocomplete
+                          selectedOptionColor='#68D391'
+                        />  
+                        {infill}
+                        <p>Calidad:</p>
+                        <ComboBox
+              
+                          options={calidad}
+                          placeholder="Elige la calidad del modelo."
+                          optionsListMaxHeight={300}
+                          style={{
+                            width: "300px"
+                          }}
+                          renderOptions={(option) => (
+                            <div className="comboBoxOption">{option}</div>
+                          )}
+                          onSelect={(option) => setCal(option)}
+                          onChange={(event) => console.log(event.target.value)}
+                          enableAutocomplete
+                          selectedOptionColor='#68D391'
+                        />
+                        {Cal}
+
+                        <p>Cantidad:</p>
+                        <ComboBox
+              
+                          options={cantidad}
+                          placeholder="Elige cuantos modelos quiere imprimir."
+                          optionsListMaxHeight={300}
+                          style={{
+                            width: "300px"
+                          }}
+                          renderOptions={(option) => (
+                            <div className="comboBoxOption">{option}</div>
+                          )}
+                          onSelect={(option) => setCantidad(option)}
+                          onChange={(event) => console.log(event.target.value)}
+                          enableAutocomplete
+                          selectedOptionColor='#68D391'
+                        />
+                        {cant}
+                        <br />
+                        <br />
+                        <br />
+                        <pre
+                          style={{
+                            display: "inline-block",
+                            textAlign: "left"
+                          }}
+                        ></pre>
+                      </Col>
+
+                      
+                      
+                    </Row>
+                  </Col>   
+                  <Row style={{justifyContent:"center",padding:"35px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"30px",border:"2px solid #000"}}>
+  
+                          
+                          {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
+                            <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
+              {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
+                              <b><u><p>Datos del modelo:</p></u></b>
+                              <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
+                              <p>Tiempo de impresión: {tiempoH} Horas  {tiempoM} minutos</p>
+                              <p>Volumen: {volumen} cm<sup>3</sup></p>
+                              <p>Gramos Utilizados: {(1.27*volumen).toFixed(2)} g</p>
+                              {cant>1 ? <p>Precio por los {cant} modelos: ${precio*cant}</p>:<p>Precio: ${precio}</p>}
+                            </div>
+                          : 
+                          <><p>Le falta un campo por completar</p></>
+                          }
+              
+                  </Row>
+                  </Row> 
               : <></>}
             </StyleDragArea>
           </div>
 {/* y aqui termina el drag and drop */}
+        <Col style={{justifyContent:"flex-center",paddingLeft:"10px"}}>
           
-
-          <Row style={{justifyContent:"flex-start"}} >
-          <Col lg={11} md={11} sm={11} xs={24} style={{justifyContent:"flex-start"}}>
-              
-              
-              <Row style={{justifyContent:"flex-end"}}>
-                <Col  style={{justifyContent:"flex-end",paddingRight:"10px"}}>
-                <p style={{textAlign:"left"}} >Impresora:</p>
-                <ComboBox
-        
-                  options={dataIM}
-                  placeholder="Elige tu impresora"
-                  optionsListMaxHeight={300}
-                  style={{
-                    width: "300px"
-                  }}
-                  renderOptions={(option) => (
-                    <div className="comboBoxOption">{option}</div>
-                  )}
-                  onSelect={(option) => setSelectedOptionIm(option)}
-                  onChange={(event) => console.log(event.target.value)}
-                  enableAutocomplete
-                  selectedOptionColor='#68D391'
-                />
-                  {selectedOptionIm}
-                  <span>
-                    {" "}
-                    {/*Lo de  abajo son if  si requieren que muestre cosas dependiendo de la impresora solo se debe colocar en la parte de codigo a la izquierda de ":" el lado derecho es el lado falso*/}
-                    {selectedOptionIm == "Impresora 1" ? <div>
-                    <p style={{textAlign:"left"}} >Material:</p>
-                    <ComboBox
-                      options={materiales}
-                      placeholder="Elige el material."
-                      optionsListMaxHeight={300}
-                      style={{
-                        width: "300px"
-                      }}
-                      renderOptions={(option) => (
-                        <div className="comboBoxOption">{option}</div>
-                      )}
-                      onSelect={(option) => handleSelect(option)}
-                      onChange={(event) => console.log(event.target.value)}
-                      enableAutocomplete
-                      selectedOptionColor='#68D391'
-                    />
-                      {material}
-                    </div>
-                    
-                    : <></>}
-
-                    {selectedOptionIm == "Impresora 2" ? <div>opciones de {selectedOptionIm}
-                    <ComboBox
-          
-                      options={materiales}
-                      placeholder="Elige el material."
-                      optionsListMaxHeight={300}
-                      style={{
-                        width: "300px"
-                      }}
-                      renderOptions={(option) => (
-                        <div className="comboBoxOption">{option}</div>
-                      )}
-                      onSelect={(option) => handleSelect(option)}
-                      onChange={(event) => console.log(event.target.value)}
-                      enableAutocomplete
-                      selectedOptionColor='#68D391'
-                    />
-                      {material}
-
-                    </div>
-                    
-                    
-                    : <></>}
-
-                  </span>
-                  <p style={{textAlign:"left"}} >Relleno:</p>
-                  <ComboBox
-        
-                    options={relleno}
-                    placeholder="Elige el relleno."
-                    optionsListMaxHeight={300}
-                    style={{
-                      width: "300px"
-                    }}
-                    renderOptions={(option) => (
-                      <div className="comboBoxOption">{option}</div>
-                    )}
-                    onSelect={(option) => setInfill(option)}
-                    onChange={(event) => console.log(event.target.value)}
-                    enableAutocomplete
-                    selectedOptionColor='#68D391'
-                  />  
-                  {infill}
-                  <p>Calidad:</p>
-                  <ComboBox
-        
-                    options={calidad}
-                    placeholder="Elige la calidad del modelo."
-                    optionsListMaxHeight={300}
-                    style={{
-                      width: "300px"
-                    }}
-                    renderOptions={(option) => (
-                      <div className="comboBoxOption">{option}</div>
-                    )}
-                    onSelect={(option) => setCal(option)}
-                    onChange={(event) => console.log(event.target.value)}
-                    enableAutocomplete
-                    selectedOptionColor='#68D391'
-                  />
-                  {Cal}
-
-                  <p>Cantidad:</p>
-                  <ComboBox
-        
-                    options={cantidad}
-                    placeholder="Elige cuantos modelos quiere imprimir."
-                    optionsListMaxHeight={300}
-                    style={{
-                      width: "300px"
-                    }}
-                    renderOptions={(option) => (
-                      <div className="comboBoxOption">{option}</div>
-                    )}
-                    onSelect={(option) => setCantidad(option)}
-                    onChange={(event) => console.log(event.target.value)}
-                    enableAutocomplete
-                    selectedOptionColor='#68D391'
-                  />
-                  {cant}
-                  <br />
-                  <br />
-                  <br />
-                  <pre
-                    style={{
-                      display: "inline-block",
-                      textAlign: "left"
-                    }}
-                  ></pre>
-                </Col>
-
-                
-                
-              </Row>
-              
-          </Col>
-          <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
-            <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
-              <Col style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
-                {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
-                  <div>
-{/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
-                    <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
-                    <p>Tiempo de impresión de una piesa: {tiempoH} Horas  {tiempoM} minutos</p>
-                    <p>Volumen del modelo: {volumen} cm<sup>3</sup></p>
-                  </div>
-                : 
-                <><p>Le falta un campo por completar</p></>
-                }
-                
-          {/*debo encontrar la forma de colocar un viewer de STL */}
-             </Col>
-            </Col>
-          </Col>
-        </Row>
+        </Col>
         <Row style={{justifyContent:"center"}}>
           <button>cotizar</button>
         </Row>
