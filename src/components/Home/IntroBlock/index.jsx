@@ -94,20 +94,14 @@ function RightBlock() {
         bbox.setFromObject( mesh );
         var cent = new THREE.Vector3();
         bbox.getCenter(cent);
-        console.log("centro x: "+cent.x);
-        console.log("centro y: "+cent.y);
-        console.log("centro z: "+cent.z);
         //Determinación de medidas
         var YLength = bbox.max.y - bbox.min.y;
         var XLength = bbox.max.x - bbox.min.x;
         var ZLength = bbox.max.z - bbox.min.z;
-        var AltaT = 29;
-        var MediaT = 16;
-        var BajaT = 12;
         setXL(XLength.toFixed(2));
         setYL(YLength.toFixed(2));
         setZL(ZLength.toFixed(2));
-        camera.position.set(cent.x,cent.y,cent.z+ZLength*3);
+        camera.position.set(cent.x+XLength,cent.y,cent.z+ZLength+15);
         console.log("stl volume is " + getVolume(geometry));
         setVolumneT(getVolume(geometry)/1000)
         var volumenRestante = (((volumenT)*infill)/100);
@@ -135,11 +129,11 @@ function RightBlock() {
         controls.update();
         controls.enablePan = false;
         controls.enableDamping = true;
-        
+        //suelo
         const mesh2 = new THREE.Mesh( new THREE.PlaneGeometry( XLength+15, XLength+15 ), new THREE.MeshPhongMaterial( { color: "#d9d7d9", depthWrite: false } ) );
 				mesh2.rotation.x = - Math.PI / 2;
 				mesh2.receiveShadow = true;
-        mesh2.position.set(0,0,-3);
+        mesh2.position.set(0,bbox.min.y,-3);
 				scene.add( mesh2 );
         // Iluminacion
         var lightz = new THREE.DirectionalLight(0xffffff);
