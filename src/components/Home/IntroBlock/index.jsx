@@ -61,9 +61,11 @@ function RightBlock() {
     useEffect(() => {
       //Creacion de escena
       var scene = new THREE.Scene();
+      scene.background = new THREE.Color( 0x8ac4ff );
       //Creación de camara
       var camera = new THREE.PerspectiveCamera( 40, 1280 / 720, 0.1, 2000 );
       
+
       //Renderizador
       var renderer = new THREE.WebGLRenderer({ alpha: true });
       renderer.setClearColor(0xffffff, 0);
@@ -78,7 +80,7 @@ function RightBlock() {
       loader.load(model, function(geometry) {
         //Opciones de modelo 3D
         var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-          color: 0x51a2db,
+          color: "#8a047f",
           //wireframe: true
         }));
         
@@ -133,7 +135,12 @@ function RightBlock() {
         controls.update();
         controls.enablePan = false;
         controls.enableDamping = true;
-  
+        
+        const mesh2 = new THREE.Mesh( new THREE.PlaneGeometry( XLength+15, XLength+15 ), new THREE.MeshPhongMaterial( { color: "#d9d7d9", depthWrite: false } ) );
+				mesh2.rotation.x = - Math.PI / 2;
+				mesh2.receiveShadow = true;
+        mesh2.position.set(0,0,-3);
+				scene.add( mesh2 );
         // Iluminacion
         var lightz = new THREE.DirectionalLight(0xffffff);
         lightz.position.set(0,0,ZLength*3);
@@ -322,14 +329,14 @@ function RightBlock() {
                 </div>
               </div>
               {ImageSelectedPrevious != null ? 
-                  <Row style={{justifyContent:"flex-start"}} >
+                  <Row style={{justifyContent:"flex-start", paddingBottom:"10px"}} >
                   <Col>
                     <ModelViewer
                     model={ImageSelectedPrevious}
                     />
                   </Col>
                   <Col>
-                    <Row style={{justifyContent:"flex-end"}}>
+                    <Row style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
                       <Col  style={{justifyContent:"flex-end",paddingRight:"10px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
                       <p style={{textAlign:"left"}} >Impresora:</p>
                       <ComboBox
@@ -496,10 +503,9 @@ function RightBlock() {
                               }
                               
                               {cant>1 ? <p>Precio por los {cant} modelos: ${precio*cant}</p>:<p>Precio: ${precio}</p>}
-                              <p>{tiempoH} {tiempoM}</p>
                             </div>
                           : 
-                          <><p>Le falta un campo por completar</p></>
+                          <p>Le falta un campo por completar</p>
                           }
               
                   </Row>
