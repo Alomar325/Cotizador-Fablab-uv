@@ -31,14 +31,6 @@ function Header(){
   */
   useLocation()
   var Home = true;
-  if((window.location.href.indexOf("/Farms") > -1))
-  {
-    Home = false
-  }
-  if((window.location.href.indexOf("/Locker") > -1))
-  {
-    Home = false
-  }
 
   const showDrawer = () => {
     setVisibility(!visible);
@@ -85,23 +77,20 @@ function Header(){
       <>
           
           <CustomNavLinkSmall >
-            <a href="#" target="_blank" rel="noreferrer">
-              <Span>Inicio</Span>
-            </a>
-          </CustomNavLinkSmall>
+            <Span><Link to="/" >Cotizador</Link></Span>
+        </CustomNavLinkSmall>
+        <CustomNavLinkSmall >
+            <Span><Link to="/criptopago" >CriptoPago</Link></Span>
+        </CustomNavLinkSmall>
           
           {/*<CustomNavLinkSmall >
             <a href="https://gateway.boba.network/">
               <Span>Bridge</Span>
             </a>
-          </CustomNavLinkSmall>*/}
-          { Home ? 
+          </CustomNavLinkSmall>
         <><CustomNavLinkSmall onClick={() => scrollTo("about")}>
         <Span style={{color:"#fff"}}>Ayuda</Span>
-        </CustomNavLinkSmall></>
-        :
-        <></>
-        }
+          </CustomNavLinkSmall></>*/}
           
               
 
