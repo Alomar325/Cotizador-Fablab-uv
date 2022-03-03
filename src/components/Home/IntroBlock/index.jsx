@@ -45,7 +45,8 @@ function RightBlock() {
   const [ZL, setZL] = useState("");
   const [tiempoH, setTiempoH] =useState("");
   const [tiempoM, setTiempoM] =useState("");
-  const [volumen, setVolumne] = useState("");
+  const [volumen, setVolumneR] = useState("");
+  const [volumenT, setVolumneT] = useState("");
   const [precio, setPrecio] = useState("");
   const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
@@ -63,7 +64,6 @@ function RightBlock() {
       //Creación de camara
       var camera = new THREE.PerspectiveCamera( 40, 1280 / 720, 0.1, 2000 );
       
-  
       //Renderizador
       var renderer = new THREE.WebGLRenderer({ alpha: true });
       renderer.setClearColor(0xffffff, 0);
@@ -107,7 +107,8 @@ function RightBlock() {
         setZL(ZLength.toFixed(2));
         camera.position.set(cent.x,cent.y,cent.z+ZLength*3);
         console.log("stl volume is " + getVolume(geometry));
-        var volumenRestante = (((getVolume(geometry)/1000).toFixed(2)*infill)/100);
+        setVolumneT(getVolume(geometry)/1000)
+        var volumenRestante = (((volumenT)*infill)/100);
         var hora = 0;
         if(Cal == "Alta"){
           hora = (((volumenRestante)*23).toFixed(0))/60;
@@ -123,7 +124,7 @@ function RightBlock() {
         minutos = minutos * 60;
         setTiempoH(hora);
         setTiempoM(Math.trunc(minutos));
-        setVolumne(volumenRestante);
+        setVolumneR(volumenRestante.toFixed(2));
         setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)))
         
         //Controles orbitales
@@ -167,6 +168,8 @@ function RightBlock() {
       //console.log("computed volume of a hollow cylinder: " + getVolume(hollowCylinderGeom));*/
       
       //Obtener volumen de un Modelo 3D
+
+      
       function getVolume(geometry) {
       
         let position = geometry.attributes.position;
@@ -295,7 +298,7 @@ function RightBlock() {
       <FadeIn >
         <Row style={{justifyContent:"center"}} >
         <Col lg={11} md={11} sm={12} xs={24}>
-            <Cimg src={"logo.png"} alt="logo.png" width="268px" height="168px" style={{}} />
+            <Cimg src={"logo.png"} alt="logo.png" width="368px" height="168px" style={{}} />
           </Col>
           
           </Row>
@@ -345,7 +348,7 @@ function RightBlock() {
                         enableAutocomplete
                         selectedOptionColor='#68D391'
                       />
-                        {selectedOptionIm}
+ 
                         <span>
                           {" "}
                           {/*Lo de  abajo son if  si requieren que muestre cosas dependiendo de la impresora solo se debe colocar en la parte de codigo a la izquierda de ":" el lado derecho es el lado falso*/}
@@ -366,7 +369,7 @@ function RightBlock() {
                             enableAutocomplete
                             selectedOptionColor='#68D391'
                           />
-                            {material}
+
                           </div>
                           
                           : <></>}
@@ -388,7 +391,7 @@ function RightBlock() {
                             enableAutocomplete
                             selectedOptionColor='#68D391'
                           />
-                            {material}
+
 
                           </div>
                           
@@ -413,7 +416,7 @@ function RightBlock() {
                           enableAutocomplete
                           selectedOptionColor='#68D391'
                         />  
-                        {infill}
+
                         <p>Calidad:</p>
                         <ComboBox
               
@@ -431,7 +434,7 @@ function RightBlock() {
                           enableAutocomplete
                           selectedOptionColor='#68D391'
                         />
-                        {Cal}
+
 
                         <p>Cantidad:</p>
                         <ComboBox
@@ -450,7 +453,7 @@ function RightBlock() {
                           enableAutocomplete
                           selectedOptionColor='#68D391'
                         />
-                        {cant}
+
                         <br />
                         <br />
                         <br />
@@ -474,10 +477,26 @@ function RightBlock() {
               {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
                               <b><u><p>Datos del modelo:</p></u></b>
                               <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
-                              <p>Tiempo de impresión: {tiempoH} Horas  {tiempoM} minutos</p>
                               <p>Volumen: {volumen} cm<sup>3</sup></p>
-                              <p>Gramos Utilizados: {(1.27*volumen).toFixed(2)} g</p>
+                              <p>Volumen al 100% de relleno: {volumenT.toFixed(2)}  cm<sup>3</sup></p>
+                              {Cal =="Alta" ? 
+                              <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.1)+(volumenT*0.15))).toFixed(2)} g</p>
+                              :
+                              <>{Cal =="Media" ? 
+                              <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.2)+(volumenT*0.15))).toFixed(2)} g</p>
+                              :
+                              <>
+                              {Cal == "Baja" ? 
+                              <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.3)+(volumenT*0.15))).toFixed(2)} g</p>
+                              :
+                              <></>}
+                              </>
+                              }
+                              </>
+                              }
+                              
                               {cant>1 ? <p>Precio por los {cant} modelos: ${precio*cant}</p>:<p>Precio: ${precio}</p>}
+                              <p>{tiempoH} {tiempoM}</p>
                             </div>
                           : 
                           <><p>Le falta un campo por completar</p></>
