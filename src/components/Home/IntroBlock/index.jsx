@@ -50,6 +50,7 @@ function RightBlock() {
   const [precio, setPrecio] = useState("");
   const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
+ 
 
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
 
@@ -61,7 +62,7 @@ function RightBlock() {
     useEffect(() => {
       //Creacion de escena
       var scene = new THREE.Scene();
-      scene.background = new THREE.Color( 0x8ac4ff );
+      scene.background = new THREE.Color( 0x8ac4ff ); //color del fondo
       //Creación de camara
       var camera = new THREE.PerspectiveCamera( 40, 1280 / 720, 0.1, 2000 );
       
@@ -69,7 +70,8 @@ function RightBlock() {
       //Renderizador
       var renderer = new THREE.WebGLRenderer({ alpha: true });
       renderer.setClearColor(0xffffff, 0);
-      renderer.setSize(720, 460 );
+      renderer.setSize(window.innerWidth * 0.5, window.innerHeight * 0.8);
+      //renderer.setSize(720, 460 );
   
       //Montar a componente funcional React
       mountRef.current.appendChild( renderer.domElement );
@@ -80,7 +82,7 @@ function RightBlock() {
       loader.load(model, function(geometry) {
         //Opciones de modelo 3D
         var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-          color: "#8a047f",
+          color: "#8a047f", //color del modelo 3D
           //wireframe: true
         }));
         
@@ -129,11 +131,11 @@ function RightBlock() {
         controls.update();
         controls.enablePan = false;
         controls.enableDamping = true;
-        //suelo
-        const mesh2 = new THREE.Mesh( new THREE.PlaneGeometry( XLength+15, XLength+15 ), new THREE.MeshPhongMaterial( { color: "#d9d7d9", depthWrite: false } ) );
+        //suelo es el mesh2
+        const mesh2 = new THREE.Mesh( new THREE.PlaneGeometry( XLength+100, XLength+100 ), new THREE.MeshPhongMaterial( { color: "#d9d7d9", depthWrite: false } ) );
 				mesh2.rotation.x = - Math.PI / 2;
 				mesh2.receiveShadow = true;
-        mesh2.position.set(0,bbox.min.y,-3);
+        mesh2.position.set(0,bbox.min.y,0);
 				scene.add( mesh2 );
         // Iluminacion
         var lightz = new THREE.DirectionalLight(0xffffff);
@@ -298,11 +300,10 @@ function RightBlock() {
     <RightBlockContainer id="intro" style={{paddingTop:"100px"}}>
       <FadeIn >
         <Row style={{justifyContent:"center"}} >
-        <Col lg={11} md={11} sm={12} xs={24}>
-            <Cimg src={"logo.png"} alt="logo.png" width="368px" height="168px" style={{}} />
+          <Col lg={11} md={11} sm={12} xs={24}>
+              <Cimg src={"logo.png"} alt="logo.png" width="368px" height="168px" style={{}} />
           </Col>
-          
-          </Row>
+        </Row>
           <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
           {/*aqui empiesa el Drag and Drop */}
           <div >
@@ -410,13 +411,14 @@ function RightBlock() {
                             width: "300px"
                           }}
                           renderOptions={(option) => (
-                            <div className="comboBoxOption">{option}</div>
+                            <div className="comboBoxOption">{option}%</div>
                           )}
                           onSelect={(option) => setInfill(option)}
                           onChange={(event) => console.log(event.target.value)}
                           enableAutocomplete
                           selectedOptionColor='#68D391'
-                        />  
+                        />
+                        <p2>Lo recomendable es un relleno de 30%</p2>
 
                         <p>Calidad:</p>
                         <ComboBox
@@ -438,22 +440,19 @@ function RightBlock() {
 
 
                         <p>Cantidad:</p>
-                        <ComboBox
-              
-                          options={cantidad}
-                          placeholder="Elige cuantos modelos quiere imprimir."
-                          optionsListMaxHeight={300}
+                        <input 
                           style={{
-                            width: "300px"
+                            width: "100px",
+                            height: "38px",
+                            background: "rgba(0,0,0,0)",
+                            border: "1px solid #adabaa"
                           }}
-                          renderOptions={(option) => (
-                            <div className="comboBoxOption">{option}</div>
-                          )}
-                          onSelect={(option) => setCantidad(option)}
-                          onChange={(event) => console.log(event.target.value)}
-                          enableAutocomplete
-                          selectedOptionColor='#68D391'
+                          type="number" 
+                          value={cant}
+                          onChange={(e) => setCantidad(e.target.value)}
                         />
+                        <br></br>
+                        <p2>Cuantas impresiones quiere.</p2>
 
                         <br />
                         <br />
@@ -478,9 +477,9 @@ function RightBlock() {
               {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
                               <b><u><p>Datos del modelo:</p></u></b>
                               <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
-                              <p>Volumen: {volumen} cm<sup>3</sup></p>
+                              {/*<p>Volumen: {volumen} cm<sup>3</sup></p>*/}
                               <p>Volumen al 100% de relleno: {volumenT.toFixed(2)}  cm<sup>3</sup></p>
-                              {Cal =="Alta" ? 
+                             { /*{Cal =="Alta" ? 
                               <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.1)+(volumenT*0.15))).toFixed(2)} g</p>
                               :
                               <>{Cal =="Media" ? 
@@ -494,9 +493,11 @@ function RightBlock() {
                               </>
                               }
                               </>
-                              }
+                              }*/}
                               
                               {cant>1 ? <p>Precio por los {cant} modelos: ${precio*cant}</p>:<p>Precio: ${precio}</p>}
+                              <br></br>
+                              <button>Pagar</button>
                             </div>
                           : 
                           <p>Le falta un campo por completar</p>
@@ -511,9 +512,6 @@ function RightBlock() {
         <Col style={{justifyContent:"flex-center",paddingLeft:"10px"}}>
           
         </Col>
-        <Row style={{justifyContent:"center"}}>
-          <button>cotizar</button>
-        </Row>
         
       </FadeIn>
     </RightBlockContainer>

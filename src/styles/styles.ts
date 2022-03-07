@@ -79,6 +79,11 @@ export const Styles = createGlobalStyle`
         margin: 0;
         
     }
+    p2 {
+        color: #adabaa;
+        font-size: 15px;        
+        margin: 0;
+    }
 
     h1 {
         font-weight: 600;
