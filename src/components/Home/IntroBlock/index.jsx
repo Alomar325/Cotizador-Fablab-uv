@@ -70,7 +70,7 @@ function RightBlock() {
       //Renderizador
       var renderer = new THREE.WebGLRenderer({ alpha: true });
       renderer.setClearColor(0xffffff, 0);
-      renderer.setSize(window.innerWidth * 0.5, window.innerHeight * 0.8);
+      renderer.setSize(window.innerWidth * 0.4, window.innerHeight * 0.6);
       //renderer.setSize(720, 460 );
   
       //Montar a componente funcional React
