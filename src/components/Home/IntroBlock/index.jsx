@@ -64,7 +64,7 @@ function RightBlock() {
       var scene = new THREE.Scene();
       scene.background = new THREE.Color( 0x8ac4ff ); //color del fondo
       //Creación de camara
-      var camera = new THREE.PerspectiveCamera( 40, 1280 / 720, 0.1, 2000 );
+      var camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.1, 2000 );
       
 
       //Renderizador
@@ -103,7 +103,7 @@ function RightBlock() {
         setXL(XLength.toFixed(2));
         setYL(YLength.toFixed(2));
         setZL(ZLength.toFixed(2));
-        camera.position.set(cent.x+XLength,cent.y,cent.z+ZLength+15);
+        camera.position.set(cent.x+XLength,cent.y+5,cent.z+ZLength+15);
         console.log("stl volume is " + getVolume(geometry));
         setVolumneT(getVolume(geometry)/1000)
         var volumenRestante = (((volumenT)*infill)/100);
