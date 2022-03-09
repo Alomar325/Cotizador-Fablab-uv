@@ -70,7 +70,7 @@ function RightBlock() {
       //Renderizador
       var renderer = new THREE.WebGLRenderer({ alpha: true });
       renderer.setClearColor(0xffffff, 0);
-      renderer.setSize(window.innerWidth * 0.4, window.innerHeight * 0.6);
+      renderer.setSize(window.innerWidth * 0.4, window.innerHeight * 0.55);
       //renderer.setSize(720, 460 );
   
       //Montar a componente funcional React
@@ -306,25 +306,28 @@ function RightBlock() {
         </Row>
           <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
           {/*aqui empiesa el Drag and Drop */}
-          <div >
+          <div>
+            {ImageSelectedPrevious == null ? 
             <StyleDragArea>
-              <br />
-              <div className="image-upload-wrap">
-                <input
-                  className="file-upload-input"
-                  type="file"
-                  accept=".stl"
-                  multiple
-                  onChange={(e) => {
-                    changeImage(e);
-                  }}
-                />
-                <div className="text-information">
-                  <p>Seleccione su archivo</p>
-                </div>
+            <br />
+            <div className="image-upload-wrap">
+              <input
+                className="file-upload-input"
+                type="file"
+                accept=".stl"
+                multiple
+                onChange={(e) => {
+                  changeImage(e);
+                }}
+              />
+              <div className="text-information">
+                <Cimg src={"./img/upload.png"} alt="upload.png" width="30px" height="30px" />
+                <p>Seleccione su archivo</p>
               </div>
-              {ImageSelectedPrevious != null ? 
-                  <Row style={{justifyContent:"flex-start", paddingBottom:"10px"}} >
+            </div>
+            </StyleDragArea>
+            :
+            <Row style={{justifyContent:"flex-start", paddingBottom:"10px"}} >
                   <Col>
                     <ModelViewer
                     model={ImageSelectedPrevious}
@@ -455,6 +458,24 @@ function RightBlock() {
                         <p2>Cuantas impresiones quiere.</p2>
 
                         <br />
+                        <StyleDragArea>
+                        <br />
+                        <div className="mini-image-upload-wrap">
+                          <input
+                            className="file-upload-input"
+                            type="file"
+                            accept=".stl"
+                            multiple
+                            onChange={(e) => {
+                              changeImage(e);
+                            }}
+                          />
+                          <div className="text-information">
+                            <Cimg src={"./img/upload.png"} alt="upload.png" width="30px" height="30px" />
+                            <p>Seleccione su archivo</p>
+                          </div>
+                        </div>
+                        </StyleDragArea>
                         <br />
                         <br />
                         <pre
@@ -505,8 +526,10 @@ function RightBlock() {
               
                   </Row>
                   </Row> 
-              : <></>}
-            </StyleDragArea>
+            }
+            
+              
+            
           </div>
 {/* y aqui termina el drag and drop */}
         <Col style={{justifyContent:"flex-center",paddingLeft:"10px"}}>
@@ -540,19 +563,28 @@ const StyleDragArea = styled.div`
     opacity: 0;
     cursor: pointer;
   }
-  .image-upload-wrap {
+  .mini-image-upload-wrap {
     position: relative;
+    width: 100%;
     height: 100px;
     border: 4px solid #d0d7de;
-    margin-left: 10px;
     margin-right: 10px;
+  }
+  .image-upload-wrap {
+    position: relative;
+    width: 50%;
+    height: 100px;
+    border: 4px solid #d0d7de;
+    margin-left: 25%;
+    margin-right: 10px;
+    margin-bottom: 10px;
   }
   .image-upload-wrap:hover {
     background-color: transparent;
     border: 4px dashed #d0d7de;
   }
   .text-information {
-    margin-top: 30px;
+    margin-top: 20px;
     text-align: center;
   }
 `;
