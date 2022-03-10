@@ -32,7 +32,7 @@ import { getMaxListeners } from "process";
   inputStyles={{ border: '1px solid #333' }}
   />*/
 
-function RightBlock() {
+function CotiBlock() {
 
 
 
@@ -50,10 +50,9 @@ function RightBlock() {
   const [precio, setPrecio] = useState("");
   const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
-  const [flag, setFlag] = useState(0); // esta era mi flag
  
 
-  const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
+  const [modelSelectedPrevious, setmodelSelectedPrevious] = useState(null);
 
   
   const ModelViewer = ({model}) => {
@@ -124,7 +123,7 @@ function RightBlock() {
         setTiempoH(hora);
         setTiempoM(Math.trunc(minutos));
         setVolumneR(volumenRestante.toFixed(2));
-        setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)));
+        setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)))
         
         //Controles orbitales
         const controls = new OrbitControls( camera, renderer.domElement );
@@ -217,20 +216,16 @@ function RightBlock() {
       </div>
     );
   }
-//no lo he usado
-  const handleClick = () => {
-    setFlag(1);
-  }
 
   const changeImage = (e) => {
-    setImageSelectedPrevious(null);
+    setmodelSelectedPrevious(null);
     console.log(e.target.files);
     if (e.target.files[0] !== undefined) {
       const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
       reader.onload = (e) => {
         e.preventDefault();
-        setImageSelectedPrevious(e.target.result); // le damos el binario de la imagen para mostrarla en pantalla
+        setmodelSelectedPrevious(e.target.result); // le damos el binario de la imagen para mostrarla en pantalla
       };
     }
   };
@@ -307,14 +302,12 @@ function RightBlock() {
         <Row style={{justifyContent:"center"}} >
           <Col lg={11} md={11} sm={12} xs={24}>
               <Cimg src={"logo.png"} alt="logo.png" width="368px" height="168px" style={{}} />
-              <p>{flag}</p>
           </Col>
         </Row>
           <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
           {/*aqui empiesa el Drag and Drop */}
           <div>
-            {ImageSelectedPrevious == null || flag == 0 ? 
-            <div>
+            {modelSelectedPrevious == null ? 
             <StyleDragArea>
             <br />
             <div className="image-upload-wrap">
@@ -333,25 +326,14 @@ function RightBlock() {
               </div>
             </div>
             </StyleDragArea>
-            <Row>
-              
-                  <Col>
-                    <ModelViewer
-                    model={ImageSelectedPrevious}
-                    />
-                    
-                  </Col>
-                  
-                </Row>
-                
-                <Row>
-                <button>hola</button>
-                </Row>
-            </div>
             :
             <Row style={{justifyContent:"flex-start", paddingBottom:"10px"}} >
-            <div>
-              <Col>
+                  <Col>
+                    <ModelViewer
+                    model={modelSelectedPrevious}
+                    />
+                  </Col>
+                  <Col>
                     <Row style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
                       <Col  style={{justifyContent:"flex-end",paddingRight:"10px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
                       <p style={{textAlign:"left"}} >Impresora:</p>
@@ -543,8 +525,6 @@ function RightBlock() {
                           }
               
                   </Row>
-                  </div>
-                  
                   </Row> 
             }
             
