@@ -314,7 +314,6 @@ function RightBlock() {
         <Row style={{justifyContent:"center"}} >
           <Col lg={11} md={11} sm={12} xs={24}>
               <Cimg src={"logo.png"} alt="logo.png" width="368px" height="168px" style={{}} />
-              <p>{flag}</p>
           </Col>
         </Row>
           <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
@@ -322,25 +321,27 @@ function RightBlock() {
           <div>
             {ImageSelectedPrevious == null || flag == 0 ? 
             <div>
-            <StyleDragArea>
-            <br />
-            <div className="image-upload-wrap">
-              <input
-                className="file-upload-input"
-                type="file"
-                accept=".stl"
-                multiple
-                onChange={(e) => {
-                  changeImage(e);
-                }}
-              />
-              <div className="text-information">
-                <Cimg src={"./img/upload.png"} alt="upload.png" width="30px" height="30px" />
-                <p>Seleccione su archivo</p>
+            {ImageSelectedPrevious == null ?
+              <StyleDragArea>
+              <br />
+              <div className="image-upload-wrap">
+                <input
+                  className="file-upload-input"
+                  type="file"
+                  accept=".stl"
+                  multiple
+                  onChange={(e) => {
+                    changeImage(e);
+                  }}
+                />
+                <div className="text-information">
+                  <Cimg src={"./img/upload.png"} alt="upload.png" width="30px" height="30px" />
+                  <p>Seleccione su archivo</p>
+                </div>
               </div>
-            </div>
-            </StyleDragArea>
-            <Row style={{justifyContent:"center",paddingBottom: "10px"}}>
+              </StyleDragArea>:<></>}
+            {ImageSelectedPrevious != null ?
+              <Row style={{justifyContent:"center",paddingBottom: "10px"}}>
               
                   <Col>
                     <ModelViewer
@@ -349,7 +350,7 @@ function RightBlock() {
                     
                   </Col>
                   
-            </Row>
+            </Row>:<></>}
                 
                 <Row style={{justifyContent:"center"}}>
                 <button onClick={sayHello}>
@@ -514,11 +515,14 @@ function RightBlock() {
                             textAlign: "left"
                           }}
                         ></pre>
-                        <button onClick={calculos}>
-                        Cotizar
-                      </button>
+                        
                       </Col>
                       <Col>
+                      <Row style={{justifyContent:"center",padding:"10px"}}>
+                      <button onClick={calculos}>
+                        Cotizar
+                      </button>
+                      </Row>
                       {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
                               <div>
                               {clickMe == "Yes" ?
