@@ -35,7 +35,6 @@ import { getMaxListeners } from "process";
 function RightBlock() {
 
 
-
   const [selectedOptionIm, setSelectedOptionIm] = useState("");
   const [material, setMaterial] = useState("");
   const [infill, setInfill] = useState("");
@@ -45,11 +44,13 @@ function RightBlock() {
   const [ZL, setZL] = useState("");
   const [tiempoH, setTiempoH] =useState("");
   const [tiempoM, setTiempoM] =useState("");
-  const [volumen, setVolumneR] = useState("");
-  const [volumenT, setVolumneT] = useState("");
+  const [volumen, setVolumenR] = useState("");
+  const [volumenT, setVolumenT] = useState("");
   const [precio, setPrecio] = useState("");
   const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
+  const [flag, setFlag] = useState(0); // esta era mi flag
+  const [clickMe, setClick] = useState("No");
  
 
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
@@ -58,7 +59,8 @@ function RightBlock() {
   const ModelViewer = ({model}) => {
 
     const mountRef = useRef(null);
-  
+    setFlag(0);
+    setClick("No");
     useEffect(() => {
       //Creacion de escena
       var scene = new THREE.Scene();
@@ -100,30 +102,16 @@ function RightBlock() {
         var YLength = bbox.max.y - bbox.min.y;
         var XLength = bbox.max.x - bbox.min.x;
         var ZLength = bbox.max.z - bbox.min.z;
-        setXL(XLength.toFixed(2));
-        setYL(YLength.toFixed(2));
-        setZL(ZLength.toFixed(2));
+        
         camera.position.set(cent.x+XLength,cent.y+5,cent.z+ZLength+15);
         console.log("stl volume is " + getVolume(geometry));
-        setVolumneT(getVolume(geometry)/1000)
-        var volumenRestante = (((volumenT)*infill)/100);
-        var hora = 0;
-        if(Cal == "Alta"){
-          hora = (((volumenRestante)*23).toFixed(0))/60;
+
+        if(flag!=1){
+          setXL(XLength.toFixed(2));
+          setYL(YLength.toFixed(2));
+          setZL(ZLength.toFixed(2));  
+          setVolumenT(getVolume(geometry)/1000);
         }
-        if(Cal == "Media"){
-          hora = ((volumenRestante*12).toFixed(0))/60;
-        }
-        if(Cal == "Baja"){
-          hora = ((volumenRestante*9).toFixed(0))/60;
-        }
-        var minutos = hora - Math.trunc(hora);
-        hora = hora - minutos;
-        minutos = minutos * 60;
-        setTiempoH(hora);
-        setTiempoM(Math.trunc(minutos));
-        setVolumneR(volumenRestante.toFixed(2));
-        setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)))
         
         //Controles orbitales
         const controls = new OrbitControls( camera, renderer.domElement );
@@ -292,7 +280,31 @@ function RightBlock() {
       setMaterial("");
     }
   }
- 
+
+  function sayHello() {
+    setFlag(1);
+  }
+  function calculos() {
+    var volumenRestante = (((volumenT)*infill)/100).toFixed(2);
+    setVolumenR(volumenRestante);
+    var hora = 0;
+          if(Cal == "Alta"){
+            hora = (((volumenRestante)*23).toFixed(0))/60;
+          }
+          if(Cal == "Media"){
+            hora = ((volumenRestante*12).toFixed(0))/60;
+          }
+          if(Cal == "Baja"){
+            hora = ((volumenRestante*9).toFixed(0))/60;
+          }
+          var minutos = hora - Math.trunc(hora);
+          hora = hora - minutos;
+          minutos = minutos * 60;
+          setTiempoH(hora);
+          setTiempoM(Math.trunc(minutos));
+          setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)));
+          setClick("Yes");
+  }
 
 
   return (
@@ -302,12 +314,14 @@ function RightBlock() {
         <Row style={{justifyContent:"center"}} >
           <Col lg={11} md={11} sm={12} xs={24}>
               <Cimg src={"logo.png"} alt="logo.png" width="368px" height="168px" style={{}} />
+              <p>{flag}</p>
           </Col>
         </Row>
           <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
           {/*aqui empiesa el Drag and Drop */}
           <div>
-            {ImageSelectedPrevious == null ? 
+            {ImageSelectedPrevious == null || flag == 0 ? 
+            <div>
             <StyleDragArea>
             <br />
             <div className="image-upload-wrap">
@@ -326,16 +340,31 @@ function RightBlock() {
               </div>
             </div>
             </StyleDragArea>
-            :
-            <Row style={{justifyContent:"flex-start", paddingBottom:"10px"}} >
+            <Row style={{justifyContent:"center",paddingBottom: "10px"}}>
+              
                   <Col>
                     <ModelViewer
                     model={ImageSelectedPrevious}
                     />
+                    
                   </Col>
-                  <Col>
-                    <Row style={{justifyContent:"flex-end",paddingLeft:"10px"}}>
-                      <Col  style={{justifyContent:"flex-end",paddingRight:"10px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
+                  
+            </Row>
+                
+                <Row style={{justifyContent:"center"}}>
+                <button onClick={sayHello}>
+                  Siguiente
+                </button>
+
+
+                </Row>
+            </div>
+            :
+            <Row style={{justifyContent:"center", paddingBottom:"10px"}} >
+            <div>
+              <Col>
+                    <Row style={{justifyContent:"center",paddingLeft:"10px"}}>
+                      <Col  style={{justifyContent:"flex-start",paddingRight:"10px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
                       <p style={{textAlign:"left"}} >Impresora:</p>
                       <ComboBox
               
@@ -417,7 +446,7 @@ function RightBlock() {
                             <div className="comboBoxOption">{option}%</div>
                           )}
                           onSelect={(option) => setInfill(option)}
-                          onChange={(event) => console.log(event.target.value)}
+                          onChange={(event) =>console.log(event.target.value)}
                           enableAutocomplete
                           selectedOptionColor='#68D391'
                         />
@@ -451,6 +480,7 @@ function RightBlock() {
                             border: "1px solid #adabaa"
                           }}
                           type="number" 
+                          min="1"
                           value={cant}
                           onChange={(e) => setCantidad(e.target.value)}
                         />
@@ -472,7 +502,7 @@ function RightBlock() {
                           />
                           <div className="text-information">
                             <Cimg src={"./img/upload.png"} alt="upload.png" width="30px" height="30px" />
-                            <p>Seleccione su archivo</p>
+                            <p>Seleccionar otro archivo</p>
                           </div>
                         </div>
                         </StyleDragArea>
@@ -484,47 +514,67 @@ function RightBlock() {
                             textAlign: "left"
                           }}
                         ></pre>
+                        <button onClick={calculos}>
+                        Cotizar
+                      </button>
                       </Col>
-
+                      <Col>
+                      {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
+                              <div>
+                              {clickMe == "Yes" ?
+                              <Row style={{justifyContent:"center",padding:"35px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"30px",border:"2px solid #000"}}>
+                              <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
+                {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
+                                <b><u><p>Datos del modelo:</p></u></b>
+                                <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
+                                {/*<p>Volumen: {volumen} cm<sup>3</sup></p>*/}
+                                <p>Volumen al 100% de relleno: {volumenT.toFixed(2)}  cm<sup>3</sup></p>
+                              { /*{Cal =="Alta" ? 
+                                <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.1)+(volumenT*0.15))).toFixed(2)} g</p>
+                                :
+                                <>{Cal =="Media" ? 
+                                <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.2)+(volumenT*0.15))).toFixed(2)} g</p>
+                                :
+                                <>
+                                {Cal == "Baja" ? 
+                                <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.3)+(volumenT*0.15))).toFixed(2)} g</p>
+                                :
+                                <></>}
+                                </>
+                                }
+                                </>
+                                }*/}
+                                
+                                {cant>1 ? <p>Precio por los {cant} modelos: $ {precio*cant}</p>:<p>Precio: ${precio}</p>}
+                                <br></br>
+                                <button>Pagar</button>
+                              </div>
+                              </Row>:<></>
+                              }
+                              </div>
+                          :
+                          <Row style={{justifyContent:"center",padding:"35px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"30px",border:"2px solid #000"}}>
+                          <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}> 
+                          <p>Le falta un campo por completar</p>
+                          </div>
+                          </Row>
+                          }
+                      </Col>
                       
                       
                     </Row>
-                  </Col>   
-                  <Row style={{justifyContent:"center",padding:"35px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"30px",border:"2px solid #000"}}>
+                    <Row style={{justifyContent:"flex-start", paddingBottom:"10px"}}>
+                    
+                    </Row>
+              </Col>   
+                  
   
                           
-                          {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
-                            <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
-              {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
-                              <b><u><p>Datos del modelo:</p></u></b>
-                              <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
-                              {/*<p>Volumen: {volumen} cm<sup>3</sup></p>*/}
-                              <p>Volumen al 100% de relleno: {volumenT.toFixed(2)}  cm<sup>3</sup></p>
-                             { /*{Cal =="Alta" ? 
-                              <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.1)+(volumenT*0.15))).toFixed(2)} g</p>
-                              :
-                              <>{Cal =="Media" ? 
-                              <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.2)+(volumenT*0.15))).toFixed(2)} g</p>
-                              :
-                              <>
-                              {Cal == "Baja" ? 
-                              <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.3)+(volumenT*0.15))).toFixed(2)} g</p>
-                              :
-                              <></>}
-                              </>
-                              }
-                              </>
-                              }*/}
-                              
-                              {cant>1 ? <p>Precio por los {cant} modelos: ${precio*cant}</p>:<p>Precio: ${precio}</p>}
-                              <br></br>
-                              <button>Pagar</button>
-                            </div>
-                          : 
-                          <p>Le falta un campo por completar</p>
-                          }
+                          
               
-                  </Row>
+                 
+                  </div>
+                  
                   </Row> 
             }
             

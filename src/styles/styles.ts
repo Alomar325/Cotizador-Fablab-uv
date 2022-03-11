@@ -118,4 +118,7 @@ export const Styles = createGlobalStyle`
     .ant-drawer-content-wrapper {
         width: 300px !important;
     }
+    .button {
+        background-color : rgba(255,255,255,0)
+    }
 `;
