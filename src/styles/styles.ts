@@ -57,7 +57,7 @@ export const Styles = createGlobalStyle`
     h4,
     h5,
     h6 {
-        font-family: 'Kanit Bold';
+        font-family: 'Impact';
         color:#fff;
         text-shadow: 0px 0px 6px rgba(255,255,255,1);
         font-size: 56px;
@@ -74,14 +74,15 @@ export const Styles = createGlobalStyle`
     }
 
     p {
+        font-family: 'Verdana';
         color: #000;
         font-size: 20px;        
         margin: 0;
         
     }
     p2 {
-        color: #adabaa;
-        font-size: 15px;        
+        color: #000;
+        font-size: 15px;
         margin: 0;
     }
 

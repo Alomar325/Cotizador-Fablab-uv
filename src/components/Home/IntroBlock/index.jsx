@@ -64,15 +64,15 @@ function RightBlock() {
     useEffect(() => {
       //Creacion de escena
       var scene = new THREE.Scene();
-      scene.background = new THREE.Color( 0x8ac4ff ); //color del fondo
+      scene.background = new THREE.Color( "#0033FF" ); //color del fondo
       //Creación de camara
-      var camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.1, 2000 );
+      var camera = new THREE.PerspectiveCamera( 40, 450 / 450, 0.1, 2000 );
       
 
       //Renderizador
       var renderer = new THREE.WebGLRenderer({ alpha: true });
       renderer.setClearColor(0xffffff, 0);
-      renderer.setSize(window.innerWidth * 0.4, window.innerHeight * 0.55);
+      renderer.setSize(450, 450);
       //renderer.setSize(720, 460 );
   
       //Montar a componente funcional React
@@ -84,7 +84,7 @@ function RightBlock() {
       loader.load(model, function(geometry) {
         //Opciones de modelo 3D
         var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-          color: "#8a047f", //color del modelo 3D
+          color: "#9900FF", //color del modelo 3D
           //wireframe: true
         }));
         
@@ -105,13 +105,28 @@ function RightBlock() {
         
         camera.position.set(cent.x+XLength,cent.y+5,cent.z+ZLength+15);
         console.log("stl volume is " + getVolume(geometry));
-
-        if(flag!=1){
-          setXL(XLength.toFixed(2));
-          setYL(YLength.toFixed(2));
-          setZL(ZLength.toFixed(2));  
-          setVolumenT(getVolume(geometry)/1000);
+        setXL(XLength.toFixed(2));
+        setYL(YLength.toFixed(2));
+        setZL(ZLength.toFixed(2));  
+        setVolumenT(getVolume(geometry)/1000);
+        var volumenRestante = (((getVolume(geometry)/1000)*infill)/100).toFixed(2);
+        setVolumenR(volumenRestante);
+        var hora = 0;
+        if(Cal == "Alta"){
+          hora = (((volumenRestante)*23).toFixed(0))/60;
         }
+        if(Cal == "Media"){
+          hora = ((volumenRestante*12).toFixed(0))/60;
+        }
+        if(Cal == "Baja"){
+          hora = ((volumenRestante*9).toFixed(0))/60;
+        }
+        var minutos = hora - Math.trunc(hora);
+        hora = hora - minutos;
+        minutos = minutos * 60;
+        setTiempoH(hora);
+        setTiempoM(Math.trunc(minutos));
+        setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)));
         
         //Controles orbitales
         const controls = new OrbitControls( camera, renderer.domElement );
@@ -237,7 +252,6 @@ function RightBlock() {
     'PLA'
   ]
   const relleno = [
-    '0',
     '10',
     '20',
     '30',
@@ -281,7 +295,7 @@ function RightBlock() {
     }
   }
 
-  function sayHello() {
+  function siguiente() {
     setFlag(1);
   }
   function calculos() {
@@ -311,61 +325,45 @@ function RightBlock() {
     
     <RightBlockContainer id="intro" style={{paddingTop:"100px"}}>
       <FadeIn >
-        <Row style={{justifyContent:"center"}} >
-          <Col lg={11} md={11} sm={12} xs={24}>
-              <Cimg src={"logo.png"} alt="logo.png" width="368px" height="168px" style={{}} />
+      <img src={"logoalt.png"} alt="logoalt.png" width="35%" height="35%"  style={{justifyContent:"flex-start", paddingBottom:"40px", paddingRight:"40px", paddingTop:"40px"}} />
+      {ImageSelectedPrevious == null ? 
+        <Row style={{justifyContent:"flex-start", paddingLeft:"20px"}} >
+          <Col style={{justifyContent:"flex-start"}}>
+          <Row style={{backgroundColor:"#eff1f4", textAlign:"center", border: "4px solid #d4d4d4", borderRadius: "10px", width:"350px"}}  >
+            <h6 style={{color:"#000", textAlign: "center" , fontSize:"25px", paddingTop: "20px", paddingLeft:"25%"}}>Carga tu modelo</h6>
+            <p style={{backgroundColor:"#eff1f4", textAlign:"center", borderTop: "4px solid #d4d4d4", borderBottom: "4px solid #d4d4d4", width:"360px", padding:"10px"}}>Servicio de impresíon 3D online. Sube tu archivo <b>STL</b> para concer su costo de impresion 3D</p>
+                <StyleDragArea>
+                  {/*debo arreglar el subidor de archivo moverlo a la derecha*/}
+                
+                <div className="image-upload-wrap">
+                  <input
+                    className="file-upload-input"
+                    type="file"
+                    accept=".stl"
+                    multiple
+                    onChange={(e) => {
+                      changeImage(e);
+                    }}
+                  />
+                  <div className="text-information">
+                    <Cimg src={"./img/upload.png"} alt="upload.png" width="100px" height="100px"/>
+                  </div>
+                </div>
+                </StyleDragArea>
+          </Row>
           </Col>
         </Row>
-          <h6 style={{color:"#000", textShadow:"2px 4px 8px rgba(0,0,0,0.5)",textAlign:"center"}}>Cotizador 3D Fablab UV</h6>
-          {/*aqui empiesa el Drag and Drop */}
-          <div>
-            {ImageSelectedPrevious == null || flag == 0 ? 
-            <div>
-            {ImageSelectedPrevious == null ?
-              <StyleDragArea>
-              <br />
-              <div className="image-upload-wrap">
-                <input
-                  className="file-upload-input"
-                  type="file"
-                  accept=".stl"
-                  multiple
-                  onChange={(e) => {
-                    changeImage(e);
-                  }}
-                />
-                <div className="text-information">
-                  <Cimg src={"./img/upload.png"} alt="upload.png" width="30px" height="30px" />
-                  <p>Seleccione su archivo</p>
-                </div>
-              </div>
-              </StyleDragArea>:<></>}
-            {ImageSelectedPrevious != null ?
-              <Row style={{justifyContent:"center",paddingBottom: "10px"}}>
-              
-                  <Col>
-                    <ModelViewer
+        :
+        <Row style={{justifyContent:"flex-start", paddingBottom:"10px",paddingRight: "20px"}} >
+        <div>
+          
+            <Row style={{justifyContent:"flex-start"}}>
+              <Col style={{justifyContent:"flex-start",}}>
+                <ModelViewer
                     model={ImageSelectedPrevious}
-                    />
-                    
-                  </Col>
-                  
-            </Row>:<></>}
-                
-                <Row style={{justifyContent:"center"}}>
-                <button onClick={sayHello}>
-                  Siguiente
-                </button>
-
-
-                </Row>
-            </div>
-            :
-            <Row style={{justifyContent:"center", paddingBottom:"10px"}} >
-            <div>
-              <Col>
-                    <Row style={{justifyContent:"center",paddingLeft:"10px"}}>
-                      <Col  style={{justifyContent:"flex-start",paddingRight:"10px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
+                  />
+              </Col>
+              <Col  style={{paddingLeft:"30px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
                       <p style={{textAlign:"left"}} >Impresora:</p>
                       <ComboBox
               
@@ -373,7 +371,7 @@ function RightBlock() {
                         placeholder="Elige tu impresora"
                         optionsListMaxHeight={300}
                         style={{
-                          width: "300px"
+                          width: "160px"
                         }}
                         renderOptions={(option) => (
                           <div className="comboBoxOption">{option}</div>
@@ -381,7 +379,7 @@ function RightBlock() {
                         onSelect={(option) => setSelectedOptionIm(option)}
                         onChange={(event) => console.log(event.target.value)}
                         enableAutocomplete
-                        selectedOptionColor='#68D391'
+                        selectedOptionColor='#9900FF'
                       />
  
                         <span>
@@ -394,7 +392,7 @@ function RightBlock() {
                             placeholder="Elige el material."
                             optionsListMaxHeight={300}
                             style={{
-                              width: "300px"
+                              width: "160px"
                             }}
                             renderOptions={(option) => (
                               <div className="comboBoxOption">{option}</div>
@@ -402,7 +400,7 @@ function RightBlock() {
                             onSelect={(option) => handleSelect(option)}
                             onChange={(event) => console.log(event.target.value)}
                             enableAutocomplete
-                            selectedOptionColor='#68D391'
+                            selectedOptionColor='#9900FF'
                           />
 
                           </div>
@@ -416,7 +414,7 @@ function RightBlock() {
                             placeholder="Elige el material."
                             optionsListMaxHeight={300}
                             style={{
-                              width: "300px"
+                              width: "160px"
                             }}
                             renderOptions={(option) => (
                               <div className="comboBoxOption">{option}</div>
@@ -424,7 +422,7 @@ function RightBlock() {
                             onSelect={(option) => handleSelect(option)}
                             onChange={(event) => console.log(event.target.value)}
                             enableAutocomplete
-                            selectedOptionColor='#68D391'
+                            selectedOptionColor='#9900FF'
                           />
 
 
@@ -441,7 +439,7 @@ function RightBlock() {
                           placeholder="Elige el relleno."
                           optionsListMaxHeight={300}
                           style={{
-                            width: "300px"
+                            width: "160px"
                           }}
                           renderOptions={(option) => (
                             <div className="comboBoxOption">{option}%</div>
@@ -449,18 +447,18 @@ function RightBlock() {
                           onSelect={(option) => setInfill(option)}
                           onChange={(event) =>console.log(event.target.value)}
                           enableAutocomplete
-                          selectedOptionColor='#68D391'
+                          selectedOptionColor='#9900FF'
                         />
-                        <p2>Lo recomendable es un relleno de 30%</p2>
+                        <p2 style={{width:"200px"}}>Se recomienda un relleno de 30%</p2>
 
                         <p>Calidad:</p>
                         <ComboBox
               
                           options={calidad}
-                          placeholder="Elige la calidad del modelo."
+                          placeholder="Elige la calidad."
                           optionsListMaxHeight={300}
                           style={{
-                            width: "300px"
+                            width: "160px"
                           }}
                           renderOptions={(option) => (
                             <div className="comboBoxOption">{option}</div>
@@ -468,7 +466,7 @@ function RightBlock() {
                           onSelect={(option) => setCal(option)}
                           onChange={(event) => console.log(event.target.value)}
                           enableAutocomplete
-                          selectedOptionColor='#68D391'
+                          selectedOptionColor='#9900FF'
                         />
 
 
@@ -487,26 +485,6 @@ function RightBlock() {
                         />
                         <br></br>
                         <p2>Cuantas impresiones quiere.</p2>
-
-                        <br />
-                        <StyleDragArea>
-                        <br />
-                        <div className="mini-image-upload-wrap">
-                          <input
-                            className="file-upload-input"
-                            type="file"
-                            accept=".stl"
-                            multiple
-                            onChange={(e) => {
-                              changeImage(e);
-                            }}
-                          />
-                          <div className="text-information">
-                            <Cimg src={"./img/upload.png"} alt="upload.png" width="30px" height="30px" />
-                            <p>Seleccionar otro archivo</p>
-                          </div>
-                        </div>
-                        </StyleDragArea>
                         <br />
                         <br />
                         <pre
@@ -517,22 +495,20 @@ function RightBlock() {
                         ></pre>
                         
                       </Col>
-                      <Col>
-                      <Row style={{justifyContent:"center",padding:"10px"}}>
-                      <button onClick={calculos}>
-                        Cotizar
-                      </button>
-                      </Row>
+                      <Col style={{paddingLeft: "10px"}}>
                       {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
-                              <div>
-                              {clickMe == "Yes" ?
-                              <Row style={{justifyContent:"center",padding:"35px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"30px",border:"2px solid #000"}}>
                               <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
+                              <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"20px", border:"2px solid #0033FF"}}>
+                              <div>
+                              <b><p>Resumen de su elección</p></b>
                 {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
-                                <b><u><p>Datos del modelo:</p></u></b>
-                                <p>Dimensiones x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
+                                <p>Dimensiones del modelo:</p>
+                                <p> x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
+                                <br />
                                 {/*<p>Volumen: {volumen} cm<sup>3</sup></p>*/}
-                                <p>Volumen al 100% de relleno: {volumenT.toFixed(2)}  cm<sup>3</sup></p>
+                                <p>Volumen total del modelo:</p>
+                                <p>{volumenT.toFixed(2)} cm<sup>3</sup></p>
+                                <br />
                               { /*{Cal =="Alta" ? 
                                 <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.1)+(volumenT*0.15))).toFixed(2)} g</p>
                                 :
@@ -549,46 +525,39 @@ function RightBlock() {
                                 </>
                                 }*/}
                                 
-                                {cant>1 ? <p>Precio por los {cant} modelos: $ {precio*cant}</p>:<p>Precio: ${precio}</p>}
+                                {cant>1 ? 
+                                <div>
+                                <p>Precio por los {cant} modelos:</p>
+                                <p>$ {precio*cant}</p>
+                                <br />
+                                </div>
+                                :
+                                <div>
+                                <p>Precio:</p>
+                                <p>$ {precio}</p>
+                                <br />
+                                </div>
+                                }
                                 <br></br>
                                 <button>Pagar</button>
                               </div>
-                              </Row>:<></>
-                              }
+                              </Row>
                               </div>
                           :
-                          <Row style={{justifyContent:"center",padding:"35px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"30px",border:"2px solid #000"}}>
+                          <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"30px", border:"2px solid #0033FF"}}>
                           <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}> 
                           <p>Le falta un campo por completar</p>
                           </div>
                           </Row>
                           }
                       </Col>
-                      
-                      
-                    </Row>
-                    <Row style={{justifyContent:"flex-start", paddingBottom:"10px"}}>
-                    
-                    </Row>
-              </Col>   
-                  
-  
-                          
-                          
-              
-                 
-                  </div>
-                  
-                  </Row> 
-            }
-            
-              
-            
-          </div>
-{/* y aqui termina el drag and drop */}
-        <Col style={{justifyContent:"flex-center",paddingLeft:"10px"}}>
-          
-        </Col>
+            </Row>
+        
+        </div>
+        </Row>
+        }
+        
+        
         
       </FadeIn>
     </RightBlockContainer>
@@ -599,7 +568,7 @@ export default RightBlock;
 
 const StyleDragArea = styled.div`
   .center {
-    display: flex;
+    display: center;
     justify-content: center;
     align-items: center;
   }
@@ -609,6 +578,7 @@ const StyleDragArea = styled.div`
   }
   .file-upload-input {
     position: absolute;
+    right: 0px;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -621,24 +591,23 @@ const StyleDragArea = styled.div`
     position: relative;
     width: 100%;
     height: 100px;
-    border: 4px solid #d0d7de;
+    border: 4px solid regba(0,0,0,0.1);
     margin-right: 10px;
   }
   .image-upload-wrap {
     position: relative;
-    width: 50%;
+    width: 100px;
     height: 100px;
-    border: 4px solid #d0d7de;
-    margin-left: 25%;
-    margin-right: 10px;
+    border: 4px solid regba(0,0,0,0.1);
+    margin-left: 120%;
     margin-bottom: 10px;
+    margin-top: 10px;
   }
   .image-upload-wrap:hover {
     background-color: transparent;
     border: 4px dashed #d0d7de;
   }
   .text-information {
-    margin-top: 20px;
     text-align: center;
   }
 `;
