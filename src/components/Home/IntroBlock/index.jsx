@@ -34,7 +34,6 @@ import {
 function RightBlock() {
 
 
-  const [selectedOptionIm, setSelectedOptionIm] = useState("");
   const [material, setMaterial] = useState("");
   const [infill, setInfill] = useState("");
   const [Cal, setCal] = useState("");
@@ -48,8 +47,7 @@ function RightBlock() {
   const [precio, setPrecio] = useState("");
   const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
-  const [flag, setFlag] = useState(0); // esta era mi flag
-  const [clickMe, setClick] = useState("No");
+
  
 
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
@@ -58,8 +56,6 @@ function RightBlock() {
   const ModelViewer = ({model}) => {
 
     const mountRef = useRef(null);
-    setFlag(0);
-    setClick("No");
     useEffect(() => {
       //Creacion de escena
       var scene = new THREE.Scene();
@@ -241,14 +237,11 @@ function RightBlock() {
     ticks: [""]
   });
 
-  const dataIM = [
-    'Impresora 1',
-    'Impresora 2'
-  ]
-
 
   const materiales = [
-    'PLA'
+    'PLA',
+    'Resina',
+    'FDM'
   ]
   const relleno = [
     '10',
@@ -360,30 +353,7 @@ function RightBlock() {
                     model={ImageSelectedPrevious}
                   />
               </Col>
-              <Col  style={{paddingLeft:"30px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
-                      <p style={{textAlign:"left"}} >Impresora:</p>
-                      <ComboBox
-              
-                        options={dataIM}
-                        placeholder="Elige tu impresora"
-                        optionsListMaxHeight={300}
-                        style={{
-                          width: "160px"
-                        }}
-                        renderOptions={(option) => (
-                          <div className="comboBoxOption">{option}</div>
-                        )}
-                        onSelect={(option) => setSelectedOptionIm(option)}
-                        onChange={(event) => console.log(event.target.value)}
-                        enableAutocomplete
-                        selectedOptionColor='#9900FF'
-                      />
- 
-                        <span>
-                          {" "}
-                          {/*Lo de  abajo son if  si requieren que muestre cosas dependiendo de la impresora solo se debe colocar en la parte de codigo a la izquierda de ":" el lado derecho es el lado falso*/}
-                          {selectedOptionIm == "Impresora 1" ? <div>
-                          <p style={{textAlign:"left"}} >Material:</p>
+              <Col  style={{paddingLeft:"30px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>                          <p style={{textAlign:"left"}} >Material:</p>
                           <ComboBox
                             options={materiales}
                             placeholder="Elige el material."
@@ -399,36 +369,6 @@ function RightBlock() {
                             enableAutocomplete
                             selectedOptionColor='#9900FF'
                           />
-
-                          </div>
-                          
-                          : <></>}
-
-                          {selectedOptionIm == "Impresora 2" ? <div>opciones de {selectedOptionIm}
-                          <ComboBox
-                
-                            options={materiales}
-                            placeholder="Elige el material."
-                            optionsListMaxHeight={300}
-                            style={{
-                              width: "160px"
-                            }}
-                            renderOptions={(option) => (
-                              <div className="comboBoxOption">{option}</div>
-                            )}
-                            onSelect={(option) => handleSelect(option)}
-                            onChange={(event) => console.log(event.target.value)}
-                            enableAutocomplete
-                            selectedOptionColor='#9900FF'
-                          />
-
-
-                          </div>
-                          
-                          
-                          : <></>}
-
-                        </span>
                         <p style={{textAlign:"left"}} >Relleno:</p>
                         <ComboBox
               
@@ -493,7 +433,7 @@ function RightBlock() {
                         
                       </Col>
                       <Col style={{paddingLeft: "10px"}}>
-                      {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
+                      {material != "" && infill != "" && cant != "" && Cal != "" ? 
                               <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
                               <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,1)", borderRadius:"20px", border:"2px solid #0033FF"}}>
                               <div>
