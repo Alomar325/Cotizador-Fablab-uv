@@ -15,11 +15,10 @@ import { STLLoader } from './STLLoader'
  // npm i --save react-ranger, npm i --save three
 import {
   RightBlockContainer,
-  Content,
   //ContentWrapper,
   Cimg,
 } from "./styles";
-import { getMaxListeners } from "process";
+
 /*
 
 */
@@ -295,37 +294,35 @@ function RightBlock() {
     }
   }
 
-  function siguiente() {
-    setFlag(1);
-  }
-  function calculos() {
-    var volumenRestante = (((volumenT)*infill)/100).toFixed(2);
-    setVolumenR(volumenRestante);
-    var hora = 0;
-          if(Cal == "Alta"){
-            hora = (((volumenRestante)*23).toFixed(0))/60;
-          }
-          if(Cal == "Media"){
-            hora = ((volumenRestante*12).toFixed(0))/60;
-          }
-          if(Cal == "Baja"){
-            hora = ((volumenRestante*9).toFixed(0))/60;
-          }
-          var minutos = hora - Math.trunc(hora);
-          hora = hora - minutos;
-          minutos = minutos * 60;
-          setTiempoH(hora);
-          setTiempoM(Math.trunc(minutos));
-          setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)));
-          setClick("Yes");
-  }
 
 
   return (
-    
     <RightBlockContainer id="intro" style={{paddingTop:"100px"}}>
-      <FadeIn >
-      <img src={"logoalt.png"} alt="logoalt.png" width="35%" height="35%"  style={{justifyContent:"flex-start", paddingBottom:"40px", paddingRight:"40px", paddingTop:"40px"}} />
+      <FadeIn>
+      
+      <Row style={{justifyContent: "flex-start", paddingBottom:"45px"}}>
+              <Col style={{justifyContent: "flex-start", paddingRight: "40px"}}>
+                <img src={"logoalt.png"} alt="logoalt.png" width="250px" height="100px" />
+              </Col>
+              {ImageSelectedPrevious != null ? 
+              <Row>
+              <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px", paddingLeft:"10px"}}>
+                <img src={"./img/icons/boton1_ON.png"} alt="boton1_ON.png" width= "50px" height= "50px"/>
+              </Col>
+              <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
+                <img src={"./img/icons/boton2_OFF.png"} alt="boton2_ON.png" width= "50px" height= "50px"/>
+              </Col>
+              <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
+                <img src={"./img/icons/boton3_OFF.png"} alt="boton3_ON.png" width= "50px" height= "50px"/>
+              </Col>
+              <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
+                <img src={"./img/icons/boton4_OFF.png"} alt="boton4_ON.png" width= "50px" height= "50px"/>
+              </Col>
+              </Row>
+              :
+              <></>
+              }
+            </Row>
       {ImageSelectedPrevious == null ? 
         <Row style={{justifyContent:"flex-start", paddingLeft:"20px"}} >
           <Col style={{justifyContent:"flex-start"}}>
@@ -333,7 +330,7 @@ function RightBlock() {
             <h6 style={{color:"#000", textAlign: "center" , fontSize:"25px", paddingTop: "20px", paddingLeft:"25%"}}>Carga tu modelo</h6>
             <p style={{backgroundColor:"#eff1f4", textAlign:"center", borderTop: "4px solid #d4d4d4", borderBottom: "4px solid #d4d4d4", width:"360px", padding:"10px"}}>Servicio de impresíon 3D online. Sube tu archivo <b>STL</b> para concer su costo de impresion 3D</p>
                 <StyleDragArea>
-                  {/*debo arreglar el subidor de archivo moverlo a la derecha*/}
+                  {/*debo aponer la imagen del mas*/}
                 
                 <div className="image-upload-wrap">
                   <input
@@ -498,7 +495,7 @@ function RightBlock() {
                       <Col style={{paddingLeft: "10px"}}>
                       {selectedOptionIm != "" && material != "" && infill != "" && cant != "" && Cal != "" ? 
                               <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
-                              <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"20px", border:"2px solid #0033FF"}}>
+                              <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,1)", borderRadius:"20px", border:"2px solid #0033FF"}}>
                               <div>
                               <b><p>Resumen de su elección</p></b>
                 {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
@@ -544,7 +541,7 @@ function RightBlock() {
                               </Row>
                               </div>
                           :
-                          <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,0.5)", borderRadius:"30px", border:"2px solid #0033FF"}}>
+                          <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,1)", borderRadius:"30px", border:"2px solid #0033FF"}}>
                           <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}> 
                           <p>Le falta un campo por completar</p>
                           </div>
@@ -552,7 +549,11 @@ function RightBlock() {
                           }
                       </Col>
             </Row>
-        
+            <br/>
+            <br/>
+            <br/>
+            
+            
         </div>
         </Row>
         }

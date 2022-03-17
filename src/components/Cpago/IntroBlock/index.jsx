@@ -38,7 +38,7 @@ function RightBlock() {
     <RightBlockContainer id="intro" style={{paddingTop:"100px"}}>
         <Row style={{justifyContent:"center"}} >
           <Col lg={11} md={11} sm={12} xs={24}>
-            <Cimg src={"logo.png"} alt="logo.png" width="100%" maxHeight="168px" style={{}} />
+            <Cimg src={"logoalt.png"} alt="logoalt.png" width="100%" maxHeight="168px" style={{}} />
           </Col>
         </Row>
         <Row style={{justifyContent:"center"}}>
