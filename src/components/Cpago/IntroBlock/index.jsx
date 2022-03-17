@@ -1,7 +1,8 @@
 import { Row, Col } from "antd";
 import styled from "styled-components";
 import ComboBox from 'react-responsive-combo-box';
-import { useState } from "react";
+import { useState,useEffect } from "react";
+//import { bitcart } from './bitcart.js'
 
 
  // npm i --save react-ranger, npm i --save three
@@ -26,6 +27,11 @@ import {
 function RightBlock() {
 
   const [selectedOptionIm, setSelectedOptionIm] = useState("");
+
+  useEffect(() => {
+    window.bitcart.showInvoice("nuBHDgPdbAXmUqWDXxeQrw");
+    console.log("lol lmao")
+  }, []);
 
   const dataIM = [
     'Litecoin',
