@@ -106,7 +106,7 @@ function Header(){
       <Container>
         <Row justify="space-between">
           <Col span={4} >
-          <LogoContainer to="/" aria-label="homepage" >
+          <LogoContainer to="/" aria-label="homepage">
             <GlowImg src="logo.png" alt="logo.png" style={{display: "block",maxWidth:"171px",maxHeight:"72px",width:"auto",height:"auto"}} /> 
           </LogoContainer>
           </Col>

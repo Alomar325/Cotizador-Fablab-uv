@@ -7,8 +7,9 @@ import 'react-responsive-combo-box/dist/index.css';
 import styled from "styled-components";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { OrbitControls } from './OrbitControls.js'
-import { STLLoader } from './STLLoader'
+import { OrbitControls } from './OrbitControls.js';
+import { STLLoader } from './STLLoader';
+
 
 
 
@@ -47,8 +48,17 @@ function RightBlock() {
   const [precio, setPrecio] = useState("");
   const [cant, setCantidad] = useState("");
   const [values, setValues] = useState([0]);
+  const [cantM, setCantidadM] = useState(1);
+  const [cantArrayM, setCantidadArrayM] = useState([]);
 
- 
+  //los arreglos de los datos de cada modelo
+  const [arrayModelos, setArrayModelos] = useState([]);
+  const [arrayMateriales, setArrayMateriales] = useState([]);
+  const [arrayRellenos, setArrayRellenos] = useState([]);
+  const [arrayCalidades, setArrayCalidades] = useState([]);
+  const [arrayCantidades, setArrayCantidades] = useState([]);
+
+  const [arrayModelosT, setArrayModelosT] = useState([]);
 
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
 
@@ -277,14 +287,29 @@ function RightBlock() {
   
   function handleSelect(option){ 
 
-    if(option == "PLA" || option == "ABS")
-    {
-      setMaterial(option);
-    }
-    else
-    {
-      setMaterial("");
-    }
+    setMaterial(option);
+
+  }
+  const setModelo = () => {
+    setArrayModelos(arrayModelos.concat(ImageSelectedPrevious));
+    setArrayMateriales(arrayMateriales.concat(material));
+    setArrayRellenos(arrayRellenos.concat(infill));
+    setArrayCalidades(arrayCalidades.concat(Cal));
+    setArrayCantidades(arrayCantidades.concat(cant));
+
+    setCantidadM(cantM + 1);
+    setCantidadArrayM(cantArrayM.concat(cantM));
+
+    const modeloTotal = {
+      numero: cantM,
+      archivo: ImageSelectedPrevious,
+      material: material,
+      relleno: infill,
+      calidad: Cal,
+      cantidad: cant,
+    };
+    setArrayModelosT(arrayModelosT.concat(modeloTotal));
+    setImageSelectedPrevious(null);
   }
 
 
@@ -297,6 +322,9 @@ function RightBlock() {
               <Col style={{justifyContent: "flex-start", paddingRight: "40px"}}>
                 <img src={"logoalt.png"} alt="logoalt.png" width="250px" height="100px" />
               </Col>
+              {/*arrayModelos.map(item => {
+                return(<li>{item} </li>)
+              }) esto es para mostrar un array de useState*/}
               {ImageSelectedPrevious != null ? 
               <Row>
               <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px", paddingLeft:"10px"}}>
@@ -476,7 +504,15 @@ function RightBlock() {
                                 </div>
                                 }
                                 <br></br>
-                                <button>Pagar</button>
+                                <Row>
+                                  <Col>
+                                    <button>Continuar a pago</button>
+                                  </Col>
+                                  <Col>
+                                    <button onClick={setModelo}>Agregar otro modelo 3D</button>
+                                  </Col>
+                                </Row>
+                               
                               </div>
                               </Row>
                               </div>
@@ -497,6 +533,28 @@ function RightBlock() {
         </div>
         </Row>
         }
+        <Row style={{overflow: "auto", padding: "20px"}}>
+          <table>
+            <thead>
+              <th>Modelo</th>
+              <th>Material</th>
+              <th>Relleno</th>
+              <th>Calidad</th>
+              <th>Cantidad</th>
+            </thead>
+            <tbody>
+              {arrayModelosT.map(item => {
+                return(<tr>
+                  <td>{item.numero}°</td>
+                  <td>{item.material}</td>
+                  <td>{item.relleno}</td>
+                  <td>{item.calidad}</td>
+                  <td>{item.cantidad}</td>
+                </tr>)
+              })}
+            </tbody>
+          </table>
+        </Row>
         
         
         

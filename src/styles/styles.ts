@@ -122,4 +122,21 @@ export const Styles = createGlobalStyle`
     .button {
         background-color : rgba(255,255,255,0)
     }
+    .table, th{
+        
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: center;
+            background-color: #0033FF;
+            color: white;
+            border: 1px solid #000;
+            width: 85px;
+          
+      }
+    .table, td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: center;
+    }
+
 `;
