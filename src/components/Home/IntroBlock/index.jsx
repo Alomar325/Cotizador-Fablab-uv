@@ -533,6 +533,7 @@ function RightBlock() {
         </div>
         </Row>
         }
+        {cantM > 1 ? 
         <Row style={{overflow: "auto", padding: "20px"}}>
           <table>
             <thead>
@@ -555,7 +556,9 @@ function RightBlock() {
             </tbody>
           </table>
         </Row>
-        
+        :
+        <></>
+        }
         
         
       </FadeIn>

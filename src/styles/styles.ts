@@ -123,7 +123,6 @@ export const Styles = createGlobalStyle`
         background-color : rgba(255,255,255,0)
     }
     .table, th{
-        
             padding-top: 12px;
             padding-bottom: 12px;
             text-align: center;
