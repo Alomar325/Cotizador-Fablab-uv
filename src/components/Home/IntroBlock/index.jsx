@@ -19,6 +19,7 @@ import {
   //ContentWrapper,
   Cimg,
 } from "./styles";
+import { Link } from "react-router-dom";
 
 /*
 
@@ -50,13 +51,11 @@ function RightBlock() {
   const [values, setValues] = useState([0]);
   const [cantM, setCantidadM] = useState(1);
   const [cantArrayM, setCantidadArrayM] = useState([]);
+  const [nombreArch, setNombreArch] = useState("");
 
   //los arreglos de los datos de cada modelo
-  const [arrayModelos, setArrayModelos] = useState([]);
-  const [arrayMateriales, setArrayMateriales] = useState([]);
-  const [arrayRellenos, setArrayRellenos] = useState([]);
-  const [arrayCalidades, setArrayCalidades] = useState([]);
-  const [arrayCantidades, setArrayCantidades] = useState([]);
+  const [precioTotal, setPrecioTotal] = useState(0);
+
 
   const [arrayModelosT, setArrayModelosT] = useState([]);
 
@@ -114,6 +113,8 @@ function RightBlock() {
         setYL(YLength.toFixed(2));
         setZL(ZLength.toFixed(2));  
         setVolumenT(getVolume(geometry)/1000);
+        var precioModelo = 0;
+        
         var volumenRestante = (((getVolume(geometry)/1000)*infill)/100).toFixed(2);
         setVolumenR(volumenRestante);
         var hora = 0;
@@ -131,8 +132,11 @@ function RightBlock() {
         minutos = minutos * 60;
         setTiempoH(hora);
         setTiempoM(Math.trunc(minutos));
-        setPrecio(Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000)));
-        
+        precioModelo = Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000));
+        if(cant !=1){
+          precioModelo = precioModelo*cant;
+        }
+        setPrecio(precioModelo);
         //Controles orbitales
         const controls = new OrbitControls( camera, renderer.domElement );
         controls.target.set( cent.x, cent.y, cent.z );
@@ -228,6 +232,7 @@ function RightBlock() {
   const changeImage = (e) => {
     setImageSelectedPrevious(null);
     console.log(e.target.files);
+    setNombreArch(e.target.files[0].name)
     if (e.target.files[0] !== undefined) {
       const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
@@ -249,7 +254,6 @@ function RightBlock() {
 
 
   const materiales = [
-    'PLA',
     'Resina',
     'FDM'
   ]
@@ -272,47 +276,44 @@ function RightBlock() {
     'Baja'  //altura de la capa 0,3
   ]
   
-  const cantidad = [
-    '1', 
-    '2', 
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10'  
-  ]
-  
-  function handleSelect(option){ 
-
-    setMaterial(option);
-
+  function handleSelect(option,num){ 
+    if(num==1){
+      setMaterial(option);
+    }
+    if(num==2){
+      setInfill(option);
+    }
+    if(num==3){
+      setCal(option);
+    }
+    if(num==4){
+      setCantidad(option);
+    }
   }
   const setModelo = () => {
-    setArrayModelos(arrayModelos.concat(ImageSelectedPrevious));
-    setArrayMateriales(arrayMateriales.concat(material));
-    setArrayRellenos(arrayRellenos.concat(infill));
-    setArrayCalidades(arrayCalidades.concat(Cal));
-    setArrayCantidades(arrayCantidades.concat(cant));
-
     setCantidadM(cantM + 1);
     setCantidadArrayM(cantArrayM.concat(cantM));
-
+    setPrecioTotal(precio+precioTotal);
     const modeloTotal = {
-      numero: cantM,
+      modelo: nombreArch,
       archivo: ImageSelectedPrevious,
       material: material,
       relleno: infill,
       calidad: Cal,
       cantidad: cant,
+      precio: precio
     };
     setArrayModelosT(arrayModelosT.concat(modeloTotal));
-    setImageSelectedPrevious(null);
+    
   }
 
-
+  const otroModelo = () => {
+    setMaterial("");
+    setInfill("");
+    setCal("");
+    setCantidad(0);
+    setImageSelectedPrevious(null);
+  }
 
   return (
     <RightBlockContainer id="intro" style={{paddingTop:"100px"}}>
@@ -322,6 +323,7 @@ function RightBlock() {
               <Col style={{justifyContent: "flex-start", paddingRight: "40px"}}>
                 <img src={"logoalt.png"} alt="logoalt.png" width="250px" height="100px" />
               </Col>
+              
               {/*arrayModelos.map(item => {
                 return(<li>{item} </li>)
               }) esto es para mostrar un array de useState*/}
@@ -392,7 +394,7 @@ function RightBlock() {
                             renderOptions={(option) => (
                               <div className="comboBoxOption">{option}</div>
                             )}
-                            onSelect={(option) => handleSelect(option)}
+                            onSelect={(option) => handleSelect(option,1)}
                             onChange={(event) => console.log(event.target.value)}
                             enableAutocomplete
                             selectedOptionColor='#9900FF'
@@ -409,7 +411,7 @@ function RightBlock() {
                           renderOptions={(option) => (
                             <div className="comboBoxOption">{option}%</div>
                           )}
-                          onSelect={(option) => setInfill(option)}
+                          onSelect={(option) => handleSelect(option,2)}
                           onChange={(event) =>console.log(event.target.value)}
                           enableAutocomplete
                           selectedOptionColor='#9900FF'
@@ -428,7 +430,7 @@ function RightBlock() {
                           renderOptions={(option) => (
                             <div className="comboBoxOption">{option}</div>
                           )}
-                          onSelect={(option) => setCal(option)}
+                          onSelect={(option) =>  handleSelect(option,3)}
                           onChange={(event) => console.log(event.target.value)}
                           enableAutocomplete
                           selectedOptionColor='#9900FF'
@@ -446,7 +448,7 @@ function RightBlock() {
                           type="number" 
                           min="1"
                           value={cant}
-                          onChange={(e) => setCantidad(e.target.value)}
+                          onChange={(e) => handleSelect(e.target.value,4)}
                         />
                         <br></br>
                         <p2>Cuantas impresiones quiere.</p2>
@@ -493,7 +495,7 @@ function RightBlock() {
                                 {cant>1 ? 
                                 <div>
                                 <p>Precio por los {cant} modelos:</p>
-                                <p>$ {precio*cant}</p>
+                                <p>$ {precio}</p>
                                 <br />
                                 </div>
                                 :
@@ -505,11 +507,17 @@ function RightBlock() {
                                 }
                                 <br></br>
                                 <Row>
-                                  <Col>
-                                    <button>Continuar a pago</button>
+                                  <Col style={{paddingRight:"5px"}}>
+                                    <button onClick={otroModelo}>Agregar otro modelo 3D</button>
+                                     
                                   </Col>
-                                  <Col>
-                                    <button onClick={setModelo}>Agregar otro modelo 3D</button>
+                                  <Col style={{paddingRight:"5px"}}>
+                                    <button onClick={setModelo}>Agregar al carrito</button>
+                                  </Col>
+                                  <Col >
+                                    <button >Continuar a pago</button>
+                                    {/*seba ve como puedes mandar estos datos a tu pagina de pago,
+                                    si el usuario hace click aqui no se guardara el ultimo modelo a menos que le coloque un onclick={setModelo} */}
                                   </Col>
                                 </Row>
                                
@@ -534,28 +542,47 @@ function RightBlock() {
         </Row>
         }
         {cantM > 1 ? 
-        <Row style={{overflow: "auto", padding: "20px"}}>
-          <table>
-            <thead>
-              <th>Modelo</th>
-              <th>Material</th>
-              <th>Relleno</th>
-              <th>Calidad</th>
-              <th>Cantidad</th>
-            </thead>
-            <tbody>
-              {arrayModelosT.map(item => {
-                return(<tr>
-                  <td>{item.numero}°</td>
-                  <td>{item.material}</td>
-                  <td>{item.relleno}</td>
-                  <td>{item.calidad}</td>
-                  <td>{item.cantidad}</td>
-                </tr>)
-              })}
-            </tbody>
-          </table>
-        </Row>
+        <div>
+          <Row style={{overflow: "auto", padding: "20px"}}>
+            <table>
+              <thead>
+                <th>Modelo</th>
+                <th>Material</th>
+                <th>Relleno</th>
+                <th>Calidad</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+              </thead>
+              <tbody>
+                {arrayModelosT.map(item => {
+                  return(<tr>
+                    <td>{item.modelo}</td>
+                    <td>{item.material}</td>
+                    <td>{item.relleno}</td>
+                    <td>{item.calidad}</td>
+                    <td>{item.cantidad}</td>
+                    <td>$ {item.precio}</td>
+                  </tr>)
+                })}
+                
+              </tbody>
+            </table>
+            <br/>
+            
+          </Row>
+          <Row style={{justifyContent:"center", paddingTop: "5px", paddingRight:"170px"}}>
+            <table>
+              <thead>
+                <th>Precio Total</th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>$ {precioTotal}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Row>
+      </div>
         :
         <></>
         }

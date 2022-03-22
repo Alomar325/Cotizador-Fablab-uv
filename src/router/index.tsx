@@ -6,7 +6,6 @@ import Header from "../components/Header";
 import { Styles } from "../styles/styles";
 import Home from "../pages/Home";
 import Cpago from "../pages/Cpago";
-import Coti from "../pages/Cotizador";
 
 //import Particles from "react-tsparticles";
 //import particlesOptions from "../particles.json";
@@ -26,9 +25,6 @@ const Router = () => {
         </Route>
         <Route exact path="/criptopago">
           <Cpago/>
-        </Route>
-        <Route exact path="/cotizador">
-          <Coti/>
         </Route>
       </Switch>
       <Footer />
