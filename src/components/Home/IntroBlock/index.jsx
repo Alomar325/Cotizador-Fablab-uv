@@ -508,16 +508,19 @@ function RightBlock() {
                                 <br></br>
                                 <Row>
                                   <Col style={{paddingRight:"5px"}}>
-                                    <button onClick={otroModelo}>Agregar otro modelo 3D</button>
+                                    <button onClick={otroModelo} className="button">Agregar otro modelo 3D</button>
                                      
                                   </Col>
                                   <Col style={{paddingRight:"5px"}}>
-                                    <button onClick={setModelo}>Agregar al carrito</button>
+                                    <button onClick={setModelo} className="button">Agregar al carrito</button>
                                   </Col>
                                   <Col >
-                                    <button >Continuar a pago</button>
-                                    {/*seba ve como puedes mandar estos datos a tu pagina de pago,
-                                    si el usuario hace click aqui no se guardara el ultimo modelo a menos que le coloque un onclick={setModelo} */}
+                                  {arrayModelosT[0]!=null ?
+                                  <Link style={{color:"white"}} to="/criptopago"><button className="button">Procesar pago</button></Link>
+                                  
+                                  :<></>}
+                                  {/*seba ve como puedes mandar estos datos a tu pagina de pago,
+                                  si el usuario hace click aqui no se guardara el ultimo modelo a menos que le coloque un onclick={setModelo} */}
                                   </Col>
                                 </Row>
                                

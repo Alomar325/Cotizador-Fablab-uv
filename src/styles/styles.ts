@@ -120,8 +120,19 @@ export const Styles = createGlobalStyle`
         width: 300px !important;
     }
     .button {
-        background-color : rgba(255,255,255,0)
+        font-family: 'Verdana';
+        padding:5px;
+        border-radius: 10px;
+        background-color: #0033FF;
+        box-shadow: 0px 4px 10px rgba(135, 167, 171, 0.5);
+        font-size: 12px;
+        color: white;
+        font-weight: 500;
+        text-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.15);
+        outline: none;
+        cursor: pointer;
     }
+    
     .table, th{
             padding-top: 12px;
             padding-bottom: 12px;
