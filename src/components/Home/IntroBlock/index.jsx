@@ -197,6 +197,9 @@ function RightBlock() {
         var volumenRestante = (((getVolume(geometry)/1000)*infill)/100).toFixed(2);
         setVolumenR(volumenRestante);
         var hora = 0;
+        if(material == "Resina"){
+          setCal("Alta");
+        }
         if(Cal == "Alta"){
           hora = (((volumenRestante)*23).toFixed(0))/60;
         }
@@ -212,6 +215,9 @@ function RightBlock() {
         setTiempoH(hora);
         setTiempoM(Math.trunc(minutos));
         precioModelo = Math.round((((1.27*volumenRestante).toFixed(2)*20000)/1000)+((hora+(minutos/60))*1000));
+        if(material=="Resina"){
+          precioModelo*=2;
+        }
         if(cant !=1){
           precioModelo = precioModelo*cant;
         }
@@ -374,11 +380,23 @@ function RightBlock() {
       setCantidad(option);
     }
   }
+
+  const RemoveModelo = (uid) => {
+    var pr =0;
+    const arregloTemp = arrayModelosT.filter((temp) => temp.id == uid);
+    arregloTemp.map(item =>  pr=item.precio);
+   setPrecioTotal(precioTotal-pr);
+    //precioTotal = precioTotal - pr;
+    const newArray = arrayModelosT.filter((arrayModelos) => arrayModelos.id !== uid);
+    setArrayModelosT(newArray);
+  }
+
   const setModelo = () => {
     setCantidadM(cantM + 1);
     setCantidadArrayM(cantArrayM.concat(cantM));
     setPrecioTotal(precio+precioTotal);
     const modeloTotal = {
+      id: cantM,
       modelo: nombreArch,
       archivo: ImageSelectedPrevious,
       material: material,
@@ -492,7 +510,8 @@ function RightBlock() {
                         model={ImageSelectedPrevious}
                       />
                   </Col>
-                  <Col  style={{paddingLeft:"30px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>                          <p style={{textAlign:"left"}} >Material:</p>
+                  <Col  style={{paddingLeft:"30px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
+                    <p style={{textAlign:"left"}} >Material:</p>
                               <ComboBox
                                 options={materiales}
                                 placeholder="Seleccione material."
@@ -526,31 +545,40 @@ function RightBlock() {
                               selectedOptionColor='#9900FF'
                             />
                             <p2 style={{width:"200px"}}>Se recomienda un relleno de 30%</p2>
-  
-                            <p>Calidad:</p>
-                            <ComboBox
-                  
-                              options={calidad}
-                              placeholder="Seleccione calidad."
-                              optionsListMaxHeight={300}
-                              style={{
-                                width: "160px"
-                              }}
-                              renderOptions={(option) => (
-                                <div className="comboBoxOption">{option}</div>
-                              )}
-                              onSelect={(option) =>  handleSelect(option,3)}
-                              onChange={(event) => console.log(event.target.value)}
-                              enableAutocomplete
-                              selectedOptionColor='#9900FF'
-                            />
+                            {material == "Resina" ? 
+                              <>
+                              <p>Calidad:</p>
+                              <div className="comboBoxOption" style={{padding:"10px", width: "160px", height: "40px", background: "rgba(0,0,0,0)", border: "1px solid #adabaa", borderRadius:"5px"}}>Alta</div>
+                              </>
+                            :
+                            <>
+                              <p>Calidad:</p>
+                              <ComboBox
+                    
+                                options={calidad}
+                                placeholder="Seleccione calidad."
+                                optionsListMaxHeight={300}
+                                style={{
+                                  width: "160px"
+                                }}
+                                renderOptions={(option) => (
+                                  <div className="comboBoxOption">{option}</div>
+                                )}
+                                onSelect={(option) =>  handleSelect(option,3)}
+                                onChange={(event) => console.log(event.target.value)}
+                                enableAutocomplete
+                                selectedOptionColor='#9900FF'
+                              />
+                              </>
+                            }
+                            
   
   
                             <p>Cantidad:</p>
                             <input 
                               style={{
                                 width: "100px",
-                                height: "38px",
+                                height: "40px",
                                 background: "rgba(0,0,0,0)",
                                 border: "1px solid #adabaa"
                               }}
@@ -622,11 +650,6 @@ function RightBlock() {
                                       </Col>
                                       <Col style={{paddingRight:"5px"}}>
                                         <button onClick={setModelo} className="button">Agregar al carrito</button>
-                                      </Col>
-                                      <Col >
-                                      
-                                      {/*seba ve como puedes mandar estos datos a tu pagina de pago,
-                                      si el usuario hace click aqui no se guardara el ultimo modelo a menos que le coloque un onclick={setModelo} */}
                                       </Col>
                                     </Row>
                                   
@@ -802,6 +825,7 @@ function RightBlock() {
                     <td>{item.calidad}</td>
                     <td>{item.cantidad}</td>
                     <td>$ {item.precio}</td>
+                    <td style={{ border: "none"}}><button onClick={() => RemoveModelo(item.id)} className="bBorrar">Eliminar</button></td>
                   </tr>)
                 })}
                 
@@ -822,11 +846,15 @@ function RightBlock() {
               </tbody>
             </table>
           </Row>   
-          {(arrayModelosT[0]!=null && nPaso === 0 )?
+          {(arrayModelosT[0]!=null && nPaso === 0 && precioTotal >= 5000 ) ?
           <Row style={{justifyContent:"center", padding: "24px"}}>
             <Button onClick={() => cambiarPaso(1)}>Procesar pago</Button>
           </Row>
-          :<></>}
+          :
+          <Row style={{justifyContent:"center", padding: "24px"}}>
+            <p2>para continuar con el pago es minimo tener un pedido de $ 5000</p2>
+          </Row>
+          }
       </div>
         :
         <></>
