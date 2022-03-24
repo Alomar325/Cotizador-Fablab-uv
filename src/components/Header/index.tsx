@@ -107,46 +107,11 @@ function Header(){
         <Row justify="space-between">
           <Col span={4} >
           <LogoContainer to="/" aria-label="homepage">
-            <GlowImg src="logo.png" alt="logo.png" style={{display: "block",maxWidth:"171px",maxHeight:"72px",width:"auto",height:"auto"}} /> 
+            <GlowImg src="logo.png" alt="logo.png" style={{display: "block",maxWidth:"100%",maxHeight:"100%",width:"auto",height:"auto"}} /> 
           </LogoContainer>
           </Col>
-          
-          <Col span={12}  style={{justifyContent:"center"}}>
-          <NotHidden>
-
-              <MenuItem />
-              
-
-            </NotHidden>
-          </Col>
-          <Col span={4} >
-          <NotHidden>
-            <RedirectItem/>
-          </NotHidden>
-          </Col>
-
-          
-          <Burger onClick={showDrawer}>
-            <Outline />
-          </Burger>
         </Row>
-        <Drawer closable={false} visible={visible} onClose={onClose}>
-          <Col style={{ marginBottom: "2.5rem" }}>
-            <Label onClick={onClose}>
-              <Col span={12}>
-                <Menu>Menu</Menu>
-              </Col>
-              <Col span={12}>
-                <Outline />
-              </Col>
-            </Label>
-          </Col>
-          <Col span={12}>
-          <RedirectItem/>
-          <MenuItem />
-            
-          </Col>
-        </Drawer>
+
       </Container>
     </HeaderSection>
   );

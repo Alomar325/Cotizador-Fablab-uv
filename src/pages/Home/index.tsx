@@ -5,7 +5,7 @@ import {
 
 
 const Container = lazy(() => import("../../common/Container"));
-const ScrollToTop = lazy(() => import("../../common/ScrollToTop"));
+//const ScrollToTop = lazy(() => import("../../common/ScrollToTop"));
 const IntroBlock = lazy(() => import ("../../components/Home/IntroBlock"));
 
 //const ChartBlock = lazy(() => import ("../../components/Home/ChartBlock"));
@@ -21,7 +21,8 @@ const Home = () => {
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
               backgroundAttachment: 'fixed',
-              zIndex:0
+              zIndex:0,
+              minHeight:"98vh"
               
         }}>
           <Container>
@@ -71,7 +72,6 @@ const Home = () => {
         <TeamBlock/>
         </Container>
       */}
-        <ScrollToTop />
     </BackgroundContainer>
     </>
   );

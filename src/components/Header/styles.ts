@@ -4,14 +4,14 @@ import { MenuOutlined } from "@ant-design/icons";
 
 export const HeaderSection = styled("header")`
   padding: 0.1rem 0.25rem;
-  position: fixed;
+  position: inline;
   width: 100%;
   top: 0;
   .ant-row-space-between {
     align-items: center;
     text-align: center;
   }
-  background-color: rgba(11,11,11,0.8);
+  background-color: rgba(11,11,11,1);
 
 `;
 

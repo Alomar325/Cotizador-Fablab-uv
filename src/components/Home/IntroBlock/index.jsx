@@ -1,6 +1,7 @@
-import { Row, Col } from "antd";
+import { Row, Col, Input } from "antd";
 import { useRanger } from "react-ranger";
 import { useState } from "react";
+import { Button } from "../../../common/Buttons/Button";
 import FadeIn from 'react-fade-in';
 import ComboBox from 'react-responsive-combo-box';
 import 'react-responsive-combo-box/dist/index.css';
@@ -35,7 +36,7 @@ import { Link } from "react-router-dom";
 
 function RightBlock() {
 
-
+  const axios = require('axios');
   const [material, setMaterial] = useState("");
   const [infill, setInfill] = useState("");
   const [Cal, setCal] = useState("");
@@ -52,6 +53,14 @@ function RightBlock() {
   const [cantM, setCantidadM] = useState(1);
   const [cantArrayM, setCantidadArrayM] = useState([]);
   const [nombreArch, setNombreArch] = useState("");
+  //Stepper y criptopago
+  const [nPaso, setNPaso] = useState(0);
+  const [usdBTC, setUSDBTC] = useState(0);
+  const [usdLTC, setUSDLTC] = useState(0);
+  const [usdCLP, setUSDCLP] = useState(0);
+  const [selectedCrypto, setSelectedCrypto] = useState("Bitcoin");
+  const [emailField, setEmailField] = useState("");
+  const [invoiceId, setInvoiceId] = useState("");
 
   //los arreglos de los datos de cada modelo
   const [precioTotal, setPrecioTotal] = useState(0);
@@ -61,7 +70,77 @@ function RightBlock() {
 
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
 
+  //Generar query a backend
+  async function createInvoice(price,email){
+    const axiosClient = axios.create({
+      baseURL: "http://www.fablabitcc.com/api",
+      timeout: 5000,
+      responseType: 'json',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    const invoiceCreation = {
+      "price": price,   
+      "store_id": "XdmMnpWqgkbTHVnszjCEULqAhKeHAyyU",
+      "currency": "CLP",
+      "buyer_email":email,
+      "status":"pending",
+    };
+    setNPaso(3);
+    const response = await axiosClient.post("/invoices", invoiceCreation);
+    const invoice = response.data.id;
+    setInvoiceId(invoice);
+    window.bitcart.showInvoice(invoice);
+    
+  }
+  async function viewInvoice(){
+    window.bitcart.showInvoice(invoiceId);
+  }
+  //Fin query backend
+
+  const handleEmailField = (event) => {
+    setEmailField(event.target.value);
+    
+  };
   
+  function cambiarPaso(paso)
+  {
+    setNPaso(paso);
+    if(nPaso !== 1 && nPaso !== 0)
+    {
+      otroModelo();
+    }
+    
+    
+  }
+
+  function nuevaOrden()
+  {
+    setNPaso(0);
+    otroModelo();
+    setCantidadM(1);
+    setCantidadArrayM([]);
+    setArrayModelosT([]);
+    setPrecioTotal(0);
+    
+  }
+
+  useEffect(() => {
+    async function obtenerPrecios(){
+      const responseBTC = await axios.get("https://api.blockchain.com/v3/exchange/tickers/BTC-USD");
+      const responseLTC = await axios.get("https://api.blockchain.com/v3/exchange/tickers/LTC-USD");
+      const responseCLP = await axios.get("https://mindicador.cl/api/dolar");
+      setUSDBTC(responseBTC.data.last_trade_price)
+      setUSDLTC(responseLTC.data.last_trade_price)
+      setUSDCLP(responseCLP.data.serie[0].valor)
+    }
+  obtenerPrecios();
+  }, []);
+
+  
+
   const ModelViewer = ({model}) => {
 
     const mountRef = useRef(null);
@@ -252,6 +331,11 @@ function RightBlock() {
     ticks: [""]
   });
 
+  const dataCryptos = [
+    'Bitcoin',
+    'Litecoin',
+    
+  ]
 
   const materiales = [
     'Resina',
@@ -327,226 +411,379 @@ function RightBlock() {
               {/*arrayModelos.map(item => {
                 return(<li>{item} </li>)
               }) esto es para mostrar un array de useState*/}
-              {ImageSelectedPrevious != null ? 
               <Row>
+              {nPaso == 0 ?
+                <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px", paddingLeft:"10px"}}>
+                  <img src={"./img/icons/boton1_ON.png"} alt="boton1_ON.png" width= "50px" height= "50px"/>
+                </Col>
+              :
               <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px", paddingLeft:"10px"}}>
-                <img src={"./img/icons/boton1_ON.png"} alt="boton1_ON.png" width= "50px" height= "50px"/>
+                <img src={"./img/icons/boton1_OFF.png"} alt="boton1_ON.png" width= "50px" height= "50px"/>
               </Col>
+              }
+              {nPaso == 1 ?
+                <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
+                <img src={"./img/icons/boton2_ON.png"} alt="boton2_ON.png" width= "50px" height= "50px"/>
+              </Col>
+              :
               <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
                 <img src={"./img/icons/boton2_OFF.png"} alt="boton2_ON.png" width= "50px" height= "50px"/>
               </Col>
-              <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
-                <img src={"./img/icons/boton3_OFF.png"} alt="boton3_ON.png" width= "50px" height= "50px"/>
-              </Col>
-              <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
-                <img src={"./img/icons/boton4_OFF.png"} alt="boton4_ON.png" width= "50px" height= "50px"/>
-              </Col>
-              </Row>
-              :
-              <></>
               }
-            </Row>
-      {ImageSelectedPrevious == null ? 
-        <Row style={{justifyContent:"flex-start", paddingLeft:"20px"}} >
-          <Col style={{justifyContent:"flex-start"}}>
-          <Row style={{backgroundColor:"#eff1f4", textAlign:"center", border: "4px solid #d4d4d4", borderRadius: "10px", width:"350px"}}  >
-            <h6 style={{color:"#000", textAlign: "center" , fontSize:"25px", paddingTop: "20px", paddingLeft:"25%"}}>Carga tu modelo</h6>
-            <p style={{backgroundColor:"#eff1f4", textAlign:"center", borderTop: "4px solid #d4d4d4", borderBottom: "4px solid #d4d4d4", width:"360px", padding:"10px"}}>Servicio de impresíon 3D online. Sube tu archivo <b>STL</b> para concer su costo de impresion 3D</p>
-                <StyleDragArea>
-                  {/*debo aponer la imagen del mas*/}
-                
-                <div className="image-upload-wrap">
-                  <input
-                    className="file-upload-input"
-                    type="file"
-                    accept=".stl"
-                    multiple
-                    onChange={(e) => {
-                      changeImage(e);
-                    }}
-                  />
-                  <div className="text-information">
-                    <Cimg src={"./img/upload.png"} alt="upload.png" width="100px" height="100px"/>
-                  </div>
-                </div>
-                </StyleDragArea>
-          </Row>
-          </Col>
-        </Row>
-        :
-        <Row style={{justifyContent:"flex-start", paddingBottom:"10px",paddingRight: "20px"}} >
-        <div>
-          
-            <Row style={{justifyContent:"flex-start"}}>
-              <Col style={{justifyContent:"flex-start",}}>
-                <ModelViewer
-                    model={ImageSelectedPrevious}
-                  />
+              {nPaso == 2 ?
+                <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
+                <img src={"./img/icons/boton3_ON.png"} alt="boton2_ON.png" width= "50px" height= "50px"/>
               </Col>
-              <Col  style={{paddingLeft:"30px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>                          <p style={{textAlign:"left"}} >Material:</p>
-                          <ComboBox
-                            options={materiales}
-                            placeholder="Elige el material."
-                            optionsListMaxHeight={300}
-                            style={{
-                              width: "160px"
-                            }}
-                            renderOptions={(option) => (
-                              <div className="comboBoxOption">{option}</div>
-                            )}
-                            onSelect={(option) => handleSelect(option,1)}
-                            onChange={(event) => console.log(event.target.value)}
-                            enableAutocomplete
-                            selectedOptionColor='#9900FF'
-                          />
-                        <p style={{textAlign:"left"}} >Relleno:</p>
-                        <ComboBox
+              :
+              <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
+                <img src={"./img/icons/boton3_OFF.png"} alt="boton2_ON.png" width= "50px" height= "50px"/>
+              </Col>
+              }
+              {nPaso == 3 ?
+                <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
+                <img src={"./img/icons/boton4_ON.png"} alt="boton2_ON.png" width= "50px" height= "50px"/>
+              </Col>
+              :
+              <Col style={{justifyContent: "center", paddingRight: "40px", paddingTop: "30px"}}>
+                <img src={"./img/icons/boton4_OFF.png"} alt="boton2_ON.png" width= "50px" height= "50px"/>
+              </Col>
+              }
+              </Row>
+
+            </Row>
+
+        {/*Primer stepper */}
+        {nPaso == 0 ? 
+          <>{ImageSelectedPrevious == null ? 
+            <Row style={{justifyContent:"flex-start", paddingLeft:"20px"}} >
+              <Col style={{justifyContent:"flex-start"}}>
+              <Row style={{backgroundColor:"#eff1f4", textAlign:"center", border: "4px solid #d4d4d4", borderRadius: "10px", width:"350px"}}  >
+                <h6 style={{color:"#000", textAlign: "center" , fontSize:"25px", paddingTop: "20px", paddingLeft:"25%"}}>Carga tu modelo</h6>
+                <p style={{backgroundColor:"#eff1f4", textAlign:"center", borderTop: "4px solid #d4d4d4", borderBottom: "4px solid #d4d4d4", width:"360px", padding:"10px"}}>Servicio de impresíon 3D online. Sube tu archivo <b>STL</b> para concer su costo de impresion 3D</p>
+                    <StyleDragArea>
+                      {/*debo aponer la imagen del mas*/}
+                    
+                    <div className="image-upload-wrap">
+                      <input
+                        className="file-upload-input"
+                        type="file"
+                        accept=".stl"
+                        multiple
+                        onChange={(e) => {
+                          changeImage(e);
+                        }}
+                      />
+                      <div className="text-information">
+                        <Cimg src={"./img/upload.png"} alt="upload.png" width="100px" height="100px"/>
+                      </div>
+                    </div>
+                    </StyleDragArea>
+              </Row>
+              </Col>
+            </Row>
+            :
+  
+            <Row style={{justifyContent:"flex-start", paddingBottom:"10px",paddingRight: "20px"}} >
+            <div>
               
-                          options={relleno}
-                          placeholder="Elige el relleno."
-                          optionsListMaxHeight={300}
-                          style={{
-                            width: "160px"
-                          }}
-                          renderOptions={(option) => (
-                            <div className="comboBoxOption">{option}%</div>
-                          )}
-                          onSelect={(option) => handleSelect(option,2)}
-                          onChange={(event) =>console.log(event.target.value)}
-                          enableAutocomplete
-                          selectedOptionColor='#9900FF'
-                        />
-                        <p2 style={{width:"200px"}}>Se recomienda un relleno de 30%</p2>
-
-                        <p>Calidad:</p>
-                        <ComboBox
-              
-                          options={calidad}
-                          placeholder="Elige la calidad."
-                          optionsListMaxHeight={300}
-                          style={{
-                            width: "160px"
-                          }}
-                          renderOptions={(option) => (
-                            <div className="comboBoxOption">{option}</div>
-                          )}
-                          onSelect={(option) =>  handleSelect(option,3)}
-                          onChange={(event) => console.log(event.target.value)}
-                          enableAutocomplete
-                          selectedOptionColor='#9900FF'
-                        />
-
-
-                        <p>Cantidad:</p>
-                        <input 
-                          style={{
-                            width: "100px",
-                            height: "38px",
-                            background: "rgba(0,0,0,0)",
-                            border: "1px solid #adabaa"
-                          }}
-                          type="number" 
-                          min="1"
-                          value={cant}
-                          onChange={(e) => handleSelect(e.target.value,4)}
-                        />
-                        <br></br>
-                        <p2>Cuantas impresiones quiere.</p2>
-                        <br />
-                        <br />
-                        <pre
-                          style={{
-                            display: "inline-block",
-                            textAlign: "left"
-                          }}
-                        ></pre>
-                        
-                      </Col>
-                      <Col style={{paddingLeft: "10px"}}>
-                      {material != "" && infill != "" && cant != "" && Cal != "" ? 
-                              <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>
-                              <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,1)", borderRadius:"20px", border:"2px solid #0033FF"}}>
-                              <div>
-                              <b><p>Resumen de su elección</p></b>
-                {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
-                                <p>Dimensiones del modelo:</p>
-                                <p> x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
-                                <br />
-                                {/*<p>Volumen: {volumen} cm<sup>3</sup></p>*/}
-                                <p>Volumen total del modelo:</p>
-                                <p>{volumenT.toFixed(2)} cm<sup>3</sup></p>
-                                <br />
-                              { /*{Cal =="Alta" ? 
-                                <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.1)+(volumenT*0.15))).toFixed(2)} g</p>
-                                :
-                                <>{Cal =="Media" ? 
-                                <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.2)+(volumenT*0.15))).toFixed(2)} g</p>
-                                :
-                                <>
-                                {Cal == "Baja" ? 
-                                <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.3)+(volumenT*0.15))).toFixed(2)} g</p>
-                                :
-                                <></>}
-                                </>
-                                }
-                                </>
-                                }*/}
-                                
-                                {cant>1 ? 
-                                <div>
-                                <p>Precio por los {cant} modelos:</p>
-                                <p>$ {precio}</p>
-                                <br />
-                                </div>
-                                :
-                                <div>
-                                <p>Precio:</p>
-                                <p>$ {precio}</p>
-                                <br />
-                                </div>
-                                }
-                                <br></br>
-                                <Row>
-                                  <Col style={{paddingRight:"5px"}}>
-                                    <button onClick={otroModelo} className="button">Agregar otro modelo 3D</button>
-                                     
-                                  </Col>
-                                  <Col style={{paddingRight:"5px"}}>
-                                    <button onClick={setModelo} className="button">Agregar al carrito</button>
-                                  </Col>
-                                  <Col >
-                                  {arrayModelosT[0]!=null ?
-                                  <Link style={{color:"white"}} to="/criptopago"><button className="button">Procesar pago</button></Link>
+                <Row style={{justifyContent:"flex-start"}}>
+                  <Col style={{justifyContent:"flex-start",}}>
+                    <ModelViewer
+                        model={ImageSelectedPrevious}
+                      />
+                  </Col>
+                  <Col  style={{paddingLeft:"30px", textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}>                          <p style={{textAlign:"left"}} >Material:</p>
+                              <ComboBox
+                                options={materiales}
+                                placeholder="Seleccione material."
+                                optionsListMaxHeight={300}
+                                style={{
+                                  width: "160px"
+                                }}
+                                renderOptions={(option) => (
+                                  <div className="comboBoxOption">{option}</div>
+                                )}
+                                onSelect={(option) => handleSelect(option,1)}
+                                onChange={(event) => console.log(event.target.value)}
+                                enableAutocomplete
+                                selectedOptionColor='#9900FF'
+                              />
+                            <p style={{textAlign:"left"}} >Relleno:</p>
+                            <ComboBox
+                  
+                              options={relleno}
+                              placeholder="Seleccione relleno."
+                              optionsListMaxHeight={300}
+                              style={{
+                                width: "160px"
+                              }}
+                              renderOptions={(option) => (
+                                <div className="comboBoxOption">{option}%</div>
+                              )}
+                              onSelect={(option) => handleSelect(option,2)}
+                              onChange={(event) =>console.log(event.target.value)}
+                              enableAutocomplete
+                              selectedOptionColor='#9900FF'
+                            />
+                            <p2 style={{width:"200px"}}>Se recomienda un relleno de 30%</p2>
+  
+                            <p>Calidad:</p>
+                            <ComboBox
+                  
+                              options={calidad}
+                              placeholder="Seleccione calidad."
+                              optionsListMaxHeight={300}
+                              style={{
+                                width: "160px"
+                              }}
+                              renderOptions={(option) => (
+                                <div className="comboBoxOption">{option}</div>
+                              )}
+                              onSelect={(option) =>  handleSelect(option,3)}
+                              onChange={(event) => console.log(event.target.value)}
+                              enableAutocomplete
+                              selectedOptionColor='#9900FF'
+                            />
+  
+  
+                            <p>Cantidad:</p>
+                            <input 
+                              style={{
+                                width: "100px",
+                                height: "38px",
+                                background: "rgba(0,0,0,0)",
+                                border: "1px solid #adabaa"
+                              }}
+                              type="number" 
+                              min="1"
+                              value={cant}
+                              onChange={(e) => handleSelect(e.target.value,4)}
+                            />
+                            <br></br>
+                            <p2>Cuantas impresiones quiere.</p2>
+                            <br />
+                            <br />
+                            <pre
+                              style={{
+                                display: "inline-block",
+                                textAlign: "left"
+                              }}
+                            ></pre>
+                            
+                          </Col>
+                          <Col style={{paddingLeft: "10px"}}>
+                          {material != "" && infill != "" && cant != "" && Cal != "" ? 
+                                <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.5)"}}>
+                                  <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,1)", boxShadow: "5px 5px 15px 5px rgba(0,0,0,0.6)",borderRadius:"20px", border:"2px solid #0033FF"}}>
+                                  <div>
+                                  <b><p>Resumen de su orden</p></b>
+                    {/*entremedio del texto se le pueden llamar las variables ej: "mi edad es {edad}" */}
+                                    <p>Dimensiones del modelo:</p>
+                                    <p> x: {XL} cm, y: {YL} cm, z: {ZL} cm</p>
+                                    <br />
+                                    {/*<p>Volumen: {volumen} cm<sup>3</sup></p>*/}
+                                    <p>Volumen total del modelo:</p>
+                                    <p>{volumenT.toFixed(2)} cm<sup>3</sup></p>
+                                    <br />
+                                  { /*{Cal =="Alta" ? 
+                                    <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.1)+(volumenT*0.15))).toFixed(2)} g</p>
+                                    :
+                                    <>{Cal =="Media" ? 
+                                    <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.2)+(volumenT*0.15))).toFixed(2)} g</p>
+                                    :
+                                    <>
+                                    {Cal == "Baja" ? 
+                                    <p>Gramos Utilizados: {((1.27*volumen) + ((3*0.4)*4 + (8*0.3)+(volumenT*0.15))).toFixed(2)} g</p>
+                                    :
+                                    <></>}
+                                    </>
+                                    }
+                                    </>
+                                    }*/}
+                                    
+                                    {cant>1 ? 
+                                    <div>
+                                    <p>Precio por los {cant} modelos:</p>
+                                    <p>$ {precio}</p>
+                                    <br />
+                                    </div>
+                                    :
+                                    <div>
+                                    <p>Precio:</p>
+                                    <p>$ {precio}</p>
+                                    <br />
+                                    </div>
+                                    }
+                                    <br></br>
+                                    <Row style={{justifyContent:"center"}}>
+                                      <Col style={{paddingRight:"5px"}}>
+                                        <button onClick={otroModelo} className="button">Agregar otro modelo 3D</button>
+                                        
+                                      </Col>
+                                      <Col style={{paddingRight:"5px"}}>
+                                        <button onClick={setModelo} className="button">Agregar al carrito</button>
+                                      </Col>
+                                      <Col >
+                                      
+                                      {/*seba ve como puedes mandar estos datos a tu pagina de pago,
+                                      si el usuario hace click aqui no se guardara el ultimo modelo a menos que le coloque un onclick={setModelo} */}
+                                      </Col>
+                                    </Row>
                                   
-                                  :<></>}
-                                  {/*seba ve como puedes mandar estos datos a tu pagina de pago,
-                                  si el usuario hace click aqui no se guardara el ultimo modelo a menos que le coloque un onclick={setModelo} */}
-                                  </Col>
-                                </Row>
-                               
+                                  </div>
+                                  </Row>
+                                  </div>
+                              :
+                              <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,1)", borderRadius:"30px", border:"2px solid #0033FF"}}>
+                              <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}> 
+                              <p>Por favor llene todos los campos.</p>
                               </div>
                               </Row>
-                              </div>
-                          :
-                          <Row style={{justifyContent:"center",padding:"20px", backgroundColor:"rgba(255,255,255,1)", borderRadius:"30px", border:"2px solid #0033FF"}}>
-                          <div style={{textShadow:"2px 2px 2px rgba(150, 150, 150, 0.6)"}}> 
-                          <p>Le falta un campo por completar</p>
-                          </div>
-                          </Row>
-                          }
-                      </Col>
+                              }
+                          </Col>
+                </Row>
+                <br/>
+                <br/>
+                <br/>
+                
+                
+            </div>
             </Row>
-            <br/>
-            <br/>
-            <br/>
-            
-            
-        </div>
-        </Row>
+            }</>
+        
+        :
+        <></>
         }
-        {cantM > 1 ? 
-        <div>
-          <Row style={{overflow: "auto", padding: "20px"}}>
+        {/* Segundo step */}
+        {nPaso == 1 ?
+          <div style={{padding:"20px",justifyContent:"center", backgroundColor:"#fff",border:"2px solid #0834fc",borderRadius:"45px",boxShadow:"5px 5px 15px 5px rgba(0,0,0,0.6)",marginLeft:"15%",marginRight:"15%"}}>
+            <Row style={{justifyContent:"center"}}>
+            <p style={{textAlign:"center"}}><b>Elija su método de pago:</b></p>
+            </Row>
+            <Row style={{justifyContent:"center", padding: "20px"}}>
+              <p style={{background:"rgba(8, 52, 252,0.5)",color:"rgba(255,255,255,0.5)",padding:"25px", borderRadius:"45px"}}>Pago con [Moneda tradicional]</p>
+            </Row>
+            <Row style={{justifyContent:"center", padding: "20px"}}>
+              <p onClick={() => cambiarPaso(2)} style={{background:"rgba(8, 52, 252,1)",color:"rgba(255,255,255,1)",padding:"25px", borderRadius:"45px",cursor:"pointer"}}>Pago con Criptomoneda</p>
+            </Row>
+          </div>
+        :
+        <></> 
+        }
+        {/* Tercer step */}
+        {nPaso == 2 ?
+          <div style={{padding:"20px",justifyContent:"center", backgroundColor:"#fff",border:"2px solid #0834fc",borderRadius:"45px",boxShadow:"5px 5px 15px 5px rgba(0,0,0,0.6)",marginLeft:"15%",marginRight:"15%"}}>
+            <Row style={{justifyContent:"center"}}>
+            <p style={{textAlign:"center"}}><b>Pago con Criptomoneda</b></p>
+            </Row>
+            <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+            <p style={{textAlign:"center"}}>Total a pagar:<br/><b>${precioTotal}</b></p>
+            </Row>
+            <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+                <Col  style={{justifyContent:"center",paddingRight:"10px"}}>
+                <p style={{textAlign:"center"}} >Seleccione Criptomoneda:</p>
+                <ComboBox
+        
+                  options={dataCryptos}
+                  placeholder="Seleccione"
+                  optionsListMaxHeight={300}
+                  style={{
+                    width: "300px",
+                    fontSize:"20px",
+                  }}
+                  renderOptions={(option) => (
+                    <div className="comboBoxOption">{option}</div>
+                  )}
+                  onSelect={(option) => setSelectedCrypto(option)}
+                  onChange={(event) => console.log(event.target.value)}
+                  enableAutocomplete
+                  selectedOptionColor='#68D391'
+                />
+                </Col>
+          </Row>
+          {selectedCrypto == "Bitcoin" ?
+          <>
+          <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+          <p style={{textAlign:"center"}}>Correo Electrónico:</p>
+          </Row>
+          <Row style={{justifyContent:"center",paddingTop:"0x"}}>
+            <Input onChange={handleEmailField} value={emailField} placeholder="Inserte correo electrónico"  style={{ width: "300px", fontSize:"20px", backgroundColor:'#fff', borderColor:'#000', color:'#000',borderRadius:"5px" }} />
+          </Row>
+          <Row style={{justifyContent:'center', fontSize:16, paddingTop:'12px'}}>
+              <Col style={{color:'#ff0000'}}>Importante! Nos comunicaremos con este correo una vez se confirme el pago.</Col>
+          </Row>
+          <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+          <p style={{textAlign:"center"}}>Precio actual de Bitcoin:<br/><b>${(parseInt(usdBTC*usdCLP)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</b></p>
+          </Row>
+          <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+          <p style={{textAlign:"center"}}>Total a pagar en Bitcoin (Approx):<br/><b>{(((precioTotal/usdCLP)/usdBTC)).toFixed(10).toString()} BTC</b></p>
+          </Row>
+          <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+            <Button onClick={() => createInvoice(precioTotal)}>Pagar {selectedCrypto}</Button>
+          </Row>
+          
+          </>
+          :
+          <></>
+          }
+          {selectedCrypto == "Litecoin" ?
+          <>
+          <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+          <p style={{textAlign:"center"}}>Correo Electrónico:</p>
+          </Row>
+          <Row style={{justifyContent:"center",paddingTop:"0x"}}>
+            <Input onChange={handleEmailField} value={emailField} placeholder="Inserte correo electrónico"  style={{ width: "300px", fontSize:"20px", backgroundColor:'#fff', borderColor:'#000', color:'#000',borderRadius:"5px" }} />
+          </Row>
+          <Row style={{justifyContent:'center', fontSize:16, paddingTop:'12px'}}>
+              <Col style={{color:'#ff0000'}}>Importante! Nos comunicaremos con este correo una vez se confirme el pago.</Col>
+          </Row>
+          <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+          <p style={{textAlign:"center"}}>Precio actual de Litecoin:<br/><b>${(parseInt(usdLTC*usdCLP)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</b></p>
+          </Row>
+          <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+          <p style={{textAlign:"center"}}>Total a pagar en Litecoin (Approx):<br/><b>{(((precioTotal/usdCLP)/usdLTC)).toFixed(8).toString()} BTC</b></p>
+          </Row>
+          <Row style={{justifyContent:"center",paddingTop:"24px"}}>
+            <Button onClick={() => createInvoice(precioTotal,emailField)}>Pagar {selectedCrypto}</Button>
+          </Row>
+          
+          </>
+          :
+          <></>
+          }
+          </div>
+        :
+        <></> 
+        }
+        {/* Cuarto step */}
+        {nPaso == 3 ?
+          <div style={{padding:"20px",justifyContent:"center", backgroundColor:"#fff",border:"2px solid #0834fc",borderRadius:"45px",boxShadow:"5px 5px 15px 5px rgba(0,0,0,0.6)",marginLeft:"15%",marginRight:"15%"}}>
+            <Row style={{justifyContent:"center"}}>
+            <p style={{textAlign:"center"}}><b>Gracias por su orden!</b></p>
+            </Row>
+            <Row style={{justifyContent:"center", paddingTop:"36px"}}>
+            <p style={{textAlign:"center"}}>Envíe los modelos que desea imprimir a:</p>
+            </Row>
+            <Row style={{justifyContent:"center", paddingTop:"0px"}}>
+            <p style={{textAlign:"center"}}><b>[Correo Fablab]</b></p>
+            </Row>
+            <Row style={{justifyContent:"center", paddingTop:"36px"}}>
+            <p style={{textAlign:"center"}}>¿Cerraste accidentalmente la ventana de pago?</p>
+            </Row>
+            <Row style={{justifyContent:"center", paddingTop:"12px"}}>
+              <Button onClick={() => viewInvoice()}>Reabrir Pago</Button>
+            </Row>
+          </div>
+        :
+        <></> 
+        }
+        {(cantM > 1 )? 
+        <div style={{padding:"20px",justifyContent:"center", backgroundColor:"#fff",border:"2px solid #0834fc",borderRadius:"45px",boxShadow:"5px 5px 15px 5px rgba(0,0,0,0.6)",margin:"5%",marginLeft:"15%",marginRight:"15%"}}>
+          <Row style={{justifyContent:"center"}}>
+          <p style={{textAlign:"center"}}><b>Resumen de su orden:</b></p>
+          </Row>
+          <Row style={{justifyContent:"center", padding: "20px"}}>
+            
             <table>
               <thead>
                 <th>Modelo</th>
@@ -556,7 +793,7 @@ function RightBlock() {
                 <th>Cantidad</th>
                 <th>Precio</th>
               </thead>
-              <tbody>
+              <tbody style ={{backgroundColor:"#fff"}}>
                 {arrayModelosT.map(item => {
                   return(<tr>
                     <td>{item.modelo}</td>
@@ -573,7 +810,7 @@ function RightBlock() {
             <br/>
             
           </Row>
-          <Row style={{justifyContent:"center", paddingTop: "5px", paddingRight:"170px"}}>
+          <Row style={{justifyContent:"center"}}>
             <table>
               <thead>
                 <th>Precio Total</th>
@@ -584,8 +821,27 @@ function RightBlock() {
                 </tr>
               </tbody>
             </table>
+          </Row>   
+          {(arrayModelosT[0]!=null && nPaso === 0 )?
+          <Row style={{justifyContent:"center", padding: "24px"}}>
+            <Button onClick={() => cambiarPaso(1)}>Procesar pago</Button>
           </Row>
+          :<></>}
       </div>
+        :
+        <></>
+        }
+        {nPaso > 0 && nPaso < 3?
+        <Row style={{justifyContent:"center", padding: "24px"}}>
+            <Button onClick={() => cambiarPaso(nPaso-1)}>Volver</Button>
+        </Row>
+        :
+        <></>
+        }
+        {nPaso === 3 ?
+        <Row style={{justifyContent:"center", padding: "24px"}}>
+            <Button onClick={() => nuevaOrden()}>Nueva Orden</Button>
+        </Row>
         :
         <></>
         }

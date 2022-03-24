@@ -26,17 +26,17 @@ import {
 
 function RightBlock() {
 
-  const [selectedOptionIm, setSelectedOptionIm] = useState("");
+  const [selectedCrypto, setSelectedCrypto] = useState("Bitcoin");
 
   useEffect(() => {
-    window.bitcart.showInvoice("nuBHDgPdbAXmUqWDXxeQrw");
+    window.bitcart.showInvoice("gxjWxGGXDAZtOGnmMryMro");
     console.log("lol lmao")
   }, []);
 
   const dataIM = [
-    'Litecoin',
-    'Ethereum',
-    'Bitcoin'
+    'Bitcoin',
+    'Litecoin'
+    
   ]
 
   return (
@@ -61,12 +61,12 @@ function RightBlock() {
                   renderOptions={(option) => (
                     <div className="comboBoxOption">{option}</div>
                   )}
-                  onSelect={(option) => setSelectedOptionIm(option)}
+                  onSelect={(option) => setSelectedCrypto(option)}
                   onChange={(event) => console.log(event.target.value)}
                   enableAutocomplete
                   selectedOptionColor='#68D391'
                 />
-                {selectedOptionIm}
+                {selectedCrypto}
                 </Col>
         </Row>
     </RightBlockContainer>
