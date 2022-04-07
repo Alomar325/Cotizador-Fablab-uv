@@ -20,7 +20,7 @@ import {
   //ContentWrapper,
   Cimg,
 } from "./styles";
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
 
 /*
 
@@ -71,7 +71,7 @@ function RightBlock() {
   const [ImageSelectedPrevious, setImageSelectedPrevious] = useState(null);
 
   //Generar query a backend
-  async function createInvoice(price,email){
+  async function createInvoice(price,email,currency){
     const axiosClient = axios.create({
       baseURL: "https://fablabitcc.com/api",
       timeout: 5000,
@@ -80,14 +80,29 @@ function RightBlock() {
         'Content-Type': 'application/json',
       }
     });
+    var invoiceCreation = {}
     
-    const invoiceCreation = {
-      "price": price,   
-      "store_id": "XdmMnpWqgkbTHVnszjCEULqAhKeHAyyU",
-      "currency": "CLP",
-      "buyer_email":email,
-      "status":"pending",
-    };
+    if(currency == "Bitcoin")
+    {
+      invoiceCreation = {
+        "price": price,   
+        "store_id": "ABZEDULzYjYqgGGwHWIgTCjfUVFEKdax",
+        "currency": "CLP",
+        "buyer_email":email,
+        "status":"pending",
+      };
+    }
+    if(currency == "Litecoin")
+    {
+      invoiceCreation = {
+        "price": price,   
+        "store_id": "TJMeHjJQlgDHCFtYjAhhgoaOfKWEHWLM",
+        "currency": "CLP",
+        "buyer_email":email,
+        "status":"pending",
+      };
+    }
+    
     setNPaso(3);
     const response = await axiosClient.post("/invoices", invoiceCreation);
     const invoice = response.data.id;
@@ -742,7 +757,7 @@ function RightBlock() {
           <p style={{textAlign:"center"}}>Total a pagar en Bitcoin (Approx):<br/><b>{(((precioTotal/usdCLP)/usdBTC)).toFixed(10).toString()} BTC</b></p>
           </Row>
           <Row style={{justifyContent:"center",paddingTop:"24px"}}>
-            <Button onClick={() => createInvoice(precioTotal)}>Pagar {selectedCrypto}</Button>
+            <Button onClick={() => createInvoice(precioTotal,emailField,selectedCrypto)}>Pagar {selectedCrypto}</Button>
           </Row>
           
           </>
@@ -764,10 +779,10 @@ function RightBlock() {
           <p style={{textAlign:"center"}}>Precio actual de Litecoin:<br/><b>${(parseInt(usdLTC*usdCLP)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</b></p>
           </Row>
           <Row style={{justifyContent:"center",paddingTop:"24px"}}>
-          <p style={{textAlign:"center"}}>Total a pagar en Litecoin (Approx):<br/><b>{(((precioTotal/usdCLP)/usdLTC)).toFixed(8).toString()} BTC</b></p>
+          <p style={{textAlign:"center"}}>Total a pagar en Litecoin (Approx):<br/><b>{(((precioTotal/usdCLP)/usdLTC)).toFixed(8).toString()} LTC</b></p>
           </Row>
           <Row style={{justifyContent:"center",paddingTop:"24px"}}>
-            <Button onClick={() => createInvoice(precioTotal,emailField)}>Pagar {selectedCrypto}</Button>
+            <Button onClick={() => createInvoice(precioTotal,emailField,selectedCrypto)}>Pagar {selectedCrypto}</Button>
           </Row>
           
           </>
@@ -846,14 +861,12 @@ function RightBlock() {
               </tbody>
             </table>
           </Row>   
-          {(arrayModelosT[0]!=null && nPaso === 0 && precioTotal >= 5000 ) ?
+          {(arrayModelosT[0]!=null && nPaso === 0) ?
           <Row style={{justifyContent:"center", padding: "24px"}}>
             <Button onClick={() => cambiarPaso(1)}>Procesar pago</Button>
           </Row>
           :
-          <Row style={{justifyContent:"center", padding: "24px"}}>
-            <p2>para continuar con el pago es minimo tener un pedido de $ 5000</p2>
-          </Row>
+            <></>
           }
       </div>
         :
