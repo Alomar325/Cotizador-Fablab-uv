@@ -73,7 +73,7 @@ function RightBlock() {
   //Generar query a backend
   async function createInvoice(price,email){
     const axiosClient = axios.create({
-      baseURL: "https://www.fablabitcc.com/api",
+      baseURL: "https://fablabitcc.com/api",
       timeout: 5000,
       responseType: 'json',
       headers: {
