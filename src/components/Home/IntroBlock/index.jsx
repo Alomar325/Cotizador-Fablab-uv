@@ -142,7 +142,7 @@ function RightBlock() {
   
 
   const ModelViewer = ({model}) => {
-
+    
     const mountRef = useRef(null);
     useEffect(() => {
       //Creacion de escena
